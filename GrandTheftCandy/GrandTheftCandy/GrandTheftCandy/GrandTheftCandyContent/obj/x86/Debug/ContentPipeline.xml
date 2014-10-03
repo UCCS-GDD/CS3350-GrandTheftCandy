@@ -7,7 +7,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\bluesquare.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\bluesquare.xnb</Output>
       <Time>2014-09-16T20:04:50-06:00</Time>
     </Item>
     <Item>
@@ -16,7 +16,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\SplashScreen.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\SplashScreen.xnb</Output>
       <Time>2014-09-22T21:59:22-06:00</Time>
     </Item>
     <Item>
@@ -25,7 +25,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gameover0.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gameover0.xnb</Output>
       <Time>2014-09-16T20:04:50-06:00</Time>
     </Item>
     <Item>
@@ -34,7 +34,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\redsquare.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\redsquare.xnb</Output>
       <Time>2014-09-16T20:04:50-06:00</Time>
     </Item>
     <Item>
@@ -43,7 +43,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\winner.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\winner.xnb</Output>
       <Time>2014-09-16T20:04:52-06:00</Time>
     </Item>
     <Item>
@@ -52,7 +52,7 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\Circle.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\Circle.xnb</Output>
       <Time>2014-09-16T20:04:50-06:00</Time>
     </Item>
     <Item>
@@ -61,8 +61,17 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\Line.xnb</Output>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\Line.xnb</Output>
       <Time>2014-09-22T22:10:14-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\floorbg.png</Source>
+      <Name>Resources\Images\floorbg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\floorbg.xnb</Output>
+      <Time>2014-10-01T21:35:49.2100641-06:00</Time>
     </Item>
     <Item>
       <Source>Resources\Sounds\gameMusic.mp3</Source>
@@ -70,9 +79,18 @@
       <Importer>Mp3Importer</Importer>
       <Processor>SongProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Sounds\gameMusic.xnb</Output>
-      <Extra>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Sounds\gameMusic.wma</Extra>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Sounds\gameMusic.xnb</Output>
+      <Extra>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Sounds\gameMusic.wma</Extra>
       <Time>2014-09-16T20:04:52-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mallbg.png</Source>
+      <Name>Resources\Images\mallbg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mallbg.xnb</Output>
+      <Time>2014-10-02T21:48:36.0985738-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -80,10 +98,10 @@
       <TargetProfile>HiDef</TargetProfile>
       <BuildConfiguration>Debug</BuildConfiguration>
       <CompressContent>false</CompressContent>
-      <RootDirectory>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandyContent\</RootDirectory>
-      <LoggerRootDirectory>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\</LoggerRootDirectory>
-      <IntermediateDirectory>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandyContent\obj\x86\Debug\</IntermediateDirectory>
-      <OutputDirectory>C:\Users\Amber\Documents\GitHub\CS3350-FA14-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\</OutputDirectory>
+      <RootDirectory>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandyContent\</RootDirectory>
+      <LoggerRootDirectory>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\</LoggerRootDirectory>
+      <IntermediateDirectory>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandyContent\obj\x86\Debug\</IntermediateDirectory>
+      <OutputDirectory>C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\</OutputDirectory>
     </Settings>
     <Assemblies>
       <Assembly>
@@ -112,7 +130,7 @@
       </Assembly>
       <Assembly>
         <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2014-09-14T10:43:24.3465741-06:00</Value>
+        <Value>2014-09-14T10:36:40.0673648-06:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

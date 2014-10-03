@@ -274,37 +274,77 @@ namespace GrandTheftCandy
       {
          KeyboardState keyboardInput = Keyboard.GetState();
 
-         if (keyboardInput.IsKeyDown(Keys.S) || keyboardInput.IsKeyDown(Keys.Down)) //backward
+         #region Move Down
+         if (keyboardInput.IsKeyDown(Keys.S) || keyboardInput.IsKeyDown(Keys.Down)) 
          {
-            m_spritePosition.Y += 5;
-            this.DrawOrder++;
-            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-            this.Game.Components.CopyTo (spriteList, 0);
-            for (int i = 0; i < spriteList.Length; i++)
+            if(m_spritePosition.Y < (this.GraphicsDevice.Viewport.Height - 5))
             {
-               if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+               m_spritePosition.Y += 5;
+               this.DrawOrder++;
+               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+               this.Game.Components.CopyTo (spriteList, 0);
+               for (int i = 0; i < spriteList.Length; i++)
                {
-                  m_spritePosition.Y -= 5;
-                  this.DrawOrder--;
+                  if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                  {
+                     m_spritePosition.Y -= 5;
+                     this.DrawOrder--;
+                  }
                }
             }
-
-               m_spritePosition.Y += 5;
-            this.DrawOrder++;
          }
-         if (keyboardInput.IsKeyDown(Keys.A) || keyboardInput.IsKeyDown(Keys.Left)) //left
+         #endregion
+
+         #region Move Left
+         if (keyboardInput.IsKeyDown(Keys.A) || keyboardInput.IsKeyDown(Keys.Left))
          {
             m_spritePosition.X -= 5;
+            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+            this.Game.Components.CopyTo (spriteList, 0);
+            for(int i = 0; i < spriteList.Length; i++)
+            {
+               if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+               {
+                  m_spritePosition.X += 5;
+               }
+            }
          }
-         if (keyboardInput.IsKeyDown(Keys.D) || keyboardInput.IsKeyDown(Keys.Right)) //right
+         #endregion
+
+         #region Move Right
+         if (keyboardInput.IsKeyDown(Keys.D) || keyboardInput.IsKeyDown(Keys.Right))
          {
             m_spritePosition.X += 5;
+            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+            this.Game.Components.CopyTo (spriteList, 0);
+            for(int i = 0; i < spriteList.Length; i++)
+            {
+               if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+               {
+                  m_spritePosition.X -= 5;
+               }
+            }
          }
-         if (keyboardInput.IsKeyDown(Keys.W) || keyboardInput.IsKeyDown(Keys.Up)) //forward
+         #endregion
+
+         #region Move Up
+         if (keyboardInput.IsKeyDown(Keys.W) || keyboardInput.IsKeyDown(Keys.Up))
          {
             m_spritePosition.Y -= 5;
             this.DrawOrder--;
+            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+            this.Game.Components.CopyTo (spriteList, 0);
+            for(int i = 0; i < spriteList.Length; i++)
+            {
+               if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+               {
+                  m_spritePosition.Y += 5;
+                  this.DrawOrder++;
+               }
+            }
          }
+         #endregion
+
          base.Update(gameTime);
       }
 

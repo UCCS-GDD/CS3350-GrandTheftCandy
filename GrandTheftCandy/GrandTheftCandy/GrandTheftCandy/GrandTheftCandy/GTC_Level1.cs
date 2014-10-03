@@ -47,9 +47,10 @@ namespace GrandTheftCandy
       Player_Controlled_Sprite player;
       Sprite_Base_Class blue;
       Sprite_Base_Class red;
-      Sprite_Base_Class redCollisionTest;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
+      Sprite_Base_Class mallFloor;
+      Sprite_Base_Class mallWall;
 
       Vector2 screenCenter;
       Vector2 blueStart;
@@ -89,7 +90,8 @@ namespace GrandTheftCandy
          player = new Player_Controlled_Sprite(this, @"Resources\Images\Circle", screenCenter, Color.White, true, "Player");
          blue = new Sprite_Base_Class(this, @"Resources\Images\bluesquare", blueStart, Color.White, true, "Blue");
          red = new Sprite_Base_Class(this, @"Resources\Images\redsquare", redStart, Color.White, true, "Red");
-         redCollisionTest = new Sprite_Base_Class (this, @"Resources\Images\redsquare", new Vector2 (400, 100), Color.White, true, "Red Collision");
+         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
+         mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
 
          Splash_Screen splashScreen = new Splash_Screen(this, @"Resources\Images\SplashScreen", screenCenter, Color.White, "Splash Screen");
 
@@ -139,25 +141,25 @@ namespace GrandTheftCandy
             this.Exit ();
          }
 
-         if (player.collidesHorizontally(red))
-         {
-            player.Visible = false;
-            red.Visible = false;
-            blue.Visible = false;
+         //if (player.collidesHorizontally(red))
+         //{
+         //   player.Visible = false;
+         //   red.Visible = false;
+         //   blue.Visible = false;
 
-            System.Threading.Thread.Sleep (50);
-            winScreen.Visible = true;
-         }
+         //   System.Threading.Thread.Sleep (50);
+         //   winScreen.Visible = true;
+         //}
 
-         if (player.collidesWithAbove(blue) || player.collidesWithBelow(blue))
-         {
-            player.Visible = false;
-            red.Visible = false;
-            blue.Visible = false;
+         //if (player.collidesWithAbove(blue) || player.collidesWithBelow(blue))
+         //{
+         //   player.Visible = false;
+         //   red.Visible = false;
+         //   blue.Visible = false;
 
-            System.Threading.Thread.Sleep (50);
-            gameOver.Visible = true;
-         }
+         //   System.Threading.Thread.Sleep (50);
+         //   gameOver.Visible = true;
+         //}
 
          base.Update(gameTime);
       }
