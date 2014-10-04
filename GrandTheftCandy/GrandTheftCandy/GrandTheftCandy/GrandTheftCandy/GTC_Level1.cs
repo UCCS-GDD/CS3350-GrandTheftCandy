@@ -45,12 +45,13 @@ namespace GrandTheftCandy
       public SpriteBatch spriteBatch;
 
       Player_Controlled_Sprite player;
-      Sprite_Base_Class blue;
+      Sprite_Base_Class lady;
       Sprite_Base_Class red;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
       Sprite_Base_Class mallFloor;
       Sprite_Base_Class mallWall;
+      Sprite_Base_Class gameBar;
 
       Vector2 screenCenter;
       Vector2 blueStart;
@@ -84,14 +85,15 @@ namespace GrandTheftCandy
          lineTexture = this.Content.Load<Texture2D>(@"Resources\Images\Line");
 
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
-         blueStart = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 4 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
+         ladyStart = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 4 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
          redStart = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width * 3 / 4 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
 
-         player = new Player_Controlled_Sprite(this, @"Resources\Images\Circle", screenCenter, Color.White, true, "Player");
-         blue = new Sprite_Base_Class(this, @"Resources\Images\bluesquare", blueStart, Color.White, true, "Blue");
+         player = new Player_Controlled_Sprite(this, @"Resources\Images\candySprite0", screenCenter, Color.White, true, "Player");
+         lady = new Sprite_Base_Class (this, @"Resources\Images\stroller1", ladyStart, Color.White, true, "Lady");
          red = new Sprite_Base_Class(this, @"Resources\Images\redsquare", redStart, Color.White, true, "Red");
          mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
          mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
+         gameBar = new Sprite_Base_Class (this, @"Resources\Images\gamebar1", new Vector2 (400, 300), false, 100, "Game bar");
 
          Splash_Screen splashScreen = new Splash_Screen(this, @"Resources\Images\SplashScreen", screenCenter, Color.White, "Splash Screen");
 
@@ -223,5 +225,7 @@ namespace GrandTheftCandy
       }
 
       #endregion
+
+      public Vector2 ladyStart { get; set; }
    }
 }
