@@ -1,5 +1,5 @@
 ﻿/*
- * TODO:
+ * TODO: See the TODO near the Animated_Sprite class
 */
 
 /*
@@ -46,7 +46,10 @@ namespace GrandTheftCandy
          Color a_renderColor, bool a_collidable, String a_SpriteName)
          : base(a_game)
       {
-         m_textureFileName = a_textureFileName;
+         if(a_textureFileName != null)
+         {
+            m_textureFileName = a_textureFileName;
+         }
          m_spritePosition = a_startingPosition;
          this.DrawOrder = (((int)m_spritePosition.Y - 200) / 5) + 5;
          m_spriteRenderColor = a_renderColor;
@@ -237,6 +240,77 @@ namespace GrandTheftCandy
 
    } // End Sprite_Base_Class.
 
+   // TODO: Finish animation class and make the NPC class inherit from it.
+   class Animated_Sprite : Sprite_Base_Class
+   {
+      #region Member Variables
+
+      private String[] m_AnimatedTextureNames;
+      private Texture2D[] m_AnimatedSprites;
+      /// <summary>
+      /// An intiger array for storing when a sprite animation ends.
+      /// </summary>
+      private int[] m_SpriteAnimationSequence;
+
+      #endregion
+
+      #region Constructors
+
+      public Animated_Sprite(Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
+         Color a_renderColor, bool a_collidable, String a_SpriteName)
+         : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+      {
+         m_AnimatedTextureNames = a_textureFileNames;
+         m_SpriteAnimationSequence = a_SpriteAnimationSequence;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      #endregion
+
+      #region Overridden Function
+
+      protected override void LoadContent ()
+      {
+         for(int i = 0; i < m_AnimatedTextureNames.Length; i++)
+         {
+            m_AnimatedSprites[i] = Game.Content.Load<Texture2D> (m_AnimatedTextureNames[i]);
+         }
+
+         base.LoadContent ();
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         base.Update (gameTime);
+      }
+
+      public override void Draw (GameTime gameTime)
+      {
+         //SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
+
+         //sb.Begin ();
+         //sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+         //   1.0f, SpriteEffects.None, 0f);
+         //sb.End ();
+
+         base.Draw (gameTime);
+      }
+
+      #endregion
+
+      #region Functions
+
+      #endregion
+   } // End Animated_Sprite Class.
+
    class Player_Controlled_Sprite : Sprite_Base_Class
    {
       #region Member Variables
@@ -360,6 +434,127 @@ namespace GrandTheftCandy
       #endregion
 
    } // End Player_Controlled_Sprite Class.
+
+   /// <summary>
+   /// For the mother NPC pass in true for the boolean and give two sprite names for the textures as an array in a_textureFileNames.
+   /// The first is the sprite with the baby holding the candy, the second should have the candy missing.
+   /// The sprite chosen to draw will be automatic based on if the mother currently has candy.
+   /// You can set "hasCandy" to true manually but if the NPC has the boolean of "isMother" as true,
+   /// the contructor will set "hasCandy" to true. The manual set is for when you steal the candy.
+   /// 
+   /// For a guard, just pass in a single sprite name and leave the second as null.
+   /// </summary>
+   class NPC_Base_Class : Sprite_Base_Class
+   {
+      #region Member Variables
+
+      private String[] m_SpriteVersionTextureNames;
+      private Texture2D[] m_SpriteVersions;
+      private bool m_IsMother;
+      private bool m_HasCandy;
+
+      #endregion
+
+      #region Constructors
+
+      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, Vector2 a_startingPosition, 
+         Color a_renderColor, bool a_collidable, String a_SpriteName, bool a_IsMother)
+         : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+      {
+         m_IsMother = a_IsMother;
+         if(m_IsMother)
+         {
+            m_HasCandy = true;
+         }
+         m_SpriteVersionTextureNames = a_textureFileNames;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      public bool hasCandy
+      {
+         get
+         {
+            return m_HasCandy;
+         }
+         set
+         {
+            m_HasCandy = value;
+         }
+      }
+
+      public bool isMother
+      {
+         get
+         {
+            return m_IsMother;
+         }
+         set
+         {
+            m_IsMother = value;
+         }
+      }
+
+      #endregion
+
+      #region Overridden Function
+
+      protected override void LoadContent ()
+      {
+         if(m_IsMother)
+         {
+            for(int i = 0; i < m_SpriteVersionTextureNames.Length; i++)
+            {
+               m_SpriteVersions[i] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[i]);
+            }
+         }
+         else
+         {
+            m_SpriteVersions[0] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[0]);
+         }
+
+         base.LoadContent ();
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         base.Update (gameTime);
+      }
+
+      public override void Draw (GameTime gameTime)
+      {
+         SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
+
+         sb.Begin ();
+         // If the mother has candy use the sprite that has the baby holding candy.
+         if(m_HasCandy)
+         {
+            sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+               1.0f, SpriteEffects.None, 0f);
+         }
+         else
+         {
+            sb.Draw (m_SpriteVersions[1], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+               1.0f, SpriteEffects.None, 0f);
+         }
+         sb.End ();
+
+         base.Draw (gameTime);
+      }
+
+      #endregion
+
+      #region Functions
+
+      #endregion
+   }
 
    class Splash_Screen : Sprite_Base_Class
    {
