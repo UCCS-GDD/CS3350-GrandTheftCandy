@@ -92,7 +92,7 @@ namespace GrandTheftCandy
          string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
 
          player = new Player_Controlled_Sprite(this, @"Resources\Images\candySprite0", screenCenter, Color.White, true, "Player");
-         mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 550), Color.White, true, "Mother1", true);
+         mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother1", true);
          guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
 
          candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Red");
@@ -110,8 +110,8 @@ namespace GrandTheftCandy
          winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
 
-         Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
-         MediaPlayer.Play(backgroundSound);
+         //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
+         //MediaPlayer.Play(backgroundSound);
 
          base.Initialize();
         }

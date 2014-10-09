@@ -126,7 +126,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar.xnb</Output>
-      <Time>2014-10-09T12:40:12.441118-06:00</Time>
+      <Time>2014-10-09T13:25:19.5028465-06:00</Time>
     </Item>
     <Item>
       <Source>Resources\Images\guardsprite.png</Source>
@@ -135,7 +135,7 @@
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\guardsprite.xnb</Output>
-      <Time>2014-10-09T12:40:12.4461235-06:00</Time>
+      <Time>2014-10-09T13:25:19.5039122-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

@@ -153,7 +153,7 @@ namespace GrandTheftCandy
          {
             return new Rectangle ((int)(m_spritePosition.X - m_spriteCenter.X),
                (int)(m_spritePosition.Y - m_spriteCenter.Y),
-               m_textureImage.Width, m_textureImage.Height);
+               50, 50);
          }
       }
 
@@ -163,8 +163,11 @@ namespace GrandTheftCandy
 
       protected override void LoadContent()
       {
-         m_textureImage = Game.Content.Load<Texture2D>(m_textureFileName);
-         m_spriteCenter = new Vector2 (m_textureImage.Width * 0.5f, m_textureImage.Height * 0.5f);
+         if (m_textureFileName != null)
+         {
+            m_textureImage = Game.Content.Load<Texture2D> (m_textureFileName);
+            m_spriteCenter = new Vector2 (m_textureImage.Width * 0.5f, m_textureImage.Height * 0.5f);
+         }
 
          base.LoadContent();
       }
@@ -181,12 +184,14 @@ namespace GrandTheftCandy
 
       public override void Draw(GameTime gameTime)
       {
-         SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
+         if (m_textureImage != null)
+         {
+            SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
 
-         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1) this.Game).cameraPosition);
-         sb.Draw(m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-            1.0f, SpriteEffects.None, 0f);
-         sb.End();
+            sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+            sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+               1.0f, SpriteEffects.None, 0f);
+            sb.End ();         }
 
          base.Draw(gameTime);
       }
@@ -508,6 +513,7 @@ namespace GrandTheftCandy
             m_HasCandy = true;
          }
          m_SpriteVersionTextureNames = a_textureFileNames;
+         m_SpriteVersions = new Texture2D[2];
       }
 
       #endregion
@@ -573,17 +579,25 @@ namespace GrandTheftCandy
       {
          SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
 
-         sb.Begin ();
+         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
          // If the mother has candy use the sprite that has the baby holding candy.
-         if(m_HasCandy)
+         if (m_IsMother)
          {
-            sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-               1.0f, SpriteEffects.None, 0f);
+            if (m_HasCandy)
+            {
+               sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+               sb.Draw (m_SpriteVersions[1], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+            }
          }
          else
          {
-            sb.Draw (m_SpriteVersions[1], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-               1.0f, SpriteEffects.None, 0f);
+            sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
          }
          sb.End ();
 
