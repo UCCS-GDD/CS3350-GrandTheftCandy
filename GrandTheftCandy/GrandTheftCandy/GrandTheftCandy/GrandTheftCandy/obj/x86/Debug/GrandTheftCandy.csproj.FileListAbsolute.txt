@@ -90,3 +90,6 @@ C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandThef
 C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\candysprite0.xnb
 C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar1.xnb
 C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\stroller1.xnb
+C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\candysprite0.xnb
+C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar1.xnb
+C:\Users\Mine\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\stroller1.xnb

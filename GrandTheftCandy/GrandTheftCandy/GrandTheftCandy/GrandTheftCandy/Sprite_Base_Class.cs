@@ -183,7 +183,7 @@ namespace GrandTheftCandy
       {
          SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
 
-         sb.Begin();
+         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1) this.Game).cameraPosition);
          sb.Draw(m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
             1.0f, SpriteEffects.None, 0f);
          sb.End();
@@ -372,14 +372,26 @@ namespace GrandTheftCandy
          #region Move Left
          if (keyboardInput.IsKeyDown(Keys.A) || keyboardInput.IsKeyDown(Keys.Left))
          {
-            m_spritePosition.X -= 5;
-            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-            this.Game.Components.CopyTo (spriteList, 0);
-            for(int i = 0; i < spriteList.Length; i++)
+            if(m_spritePosition.X - (m_textureImage.Width/2) > 0)
             {
-               if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+               m_spritePosition.X -= 5;
+               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+               this.Game.Components.CopyTo (spriteList, 0);
+               for(int i = 0; i < spriteList.Length; i++)
                {
-                  m_spritePosition.X += 5;
+                  if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                  {
+                     m_spritePosition.X += 5;
+                  }
+
+                  if(m_spritePosition.X > 400 && m_spritePosition.X < 2600)
+                  {
+                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (400-m_spritePosition.X, 0, 0);
+                  }
+                  else if(m_spritePosition.X < 400)
+                  {
+                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (0, 0, 0);
+                  }
                }
             }
          }
@@ -388,14 +400,26 @@ namespace GrandTheftCandy
          #region Move Right
          if (keyboardInput.IsKeyDown(Keys.D) || keyboardInput.IsKeyDown(Keys.Right))
          {
-            m_spritePosition.X += 5;
-            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-            this.Game.Components.CopyTo (spriteList, 0);
-            for(int i = 0; i < spriteList.Length; i++)
+            if(m_spritePosition.X < 2600)
             {
-               if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+               m_spritePosition.X += 5;
+               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+               this.Game.Components.CopyTo (spriteList, 0);
+               for(int i = 0; i < spriteList.Length; i++)
                {
-                  m_spritePosition.X -= 5;
+                  if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                  {
+                     m_spritePosition.X -= 5;
+                  }
+
+                  if(m_spritePosition.X < 2600 && m_spritePosition.X >400)
+                  {
+                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (400-m_spritePosition.X, 0, 0);
+                  }
+                  else if(m_spritePosition.X > 2600)
+                  {
+                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (2600, 0, 0);
+                  }
                }
             }
          }
@@ -596,6 +620,7 @@ namespace GrandTheftCandy
          {
             this.Visible = false;
             this.DrawOrder = 100;
+            this.Game.IsMouseVisible = false;
          }
 
          base.Update(gameTime);

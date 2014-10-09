@@ -43,6 +43,7 @@ namespace GrandTheftCandy
       #region Member Variables
       GraphicsDeviceManager graphics;
       public SpriteBatch spriteBatch;
+      public Matrix cameraPosition;
 
       Player_Controlled_Sprite player;
       Sprite_Base_Class lady;
@@ -54,7 +55,6 @@ namespace GrandTheftCandy
       Sprite_Base_Class gameBar;
 
       Vector2 screenCenter;
-      Vector2 blueStart;
       Vector2 redStart;
 
       Texture2D lineTexture;
@@ -69,6 +69,7 @@ namespace GrandTheftCandy
          graphics.PreferredBackBufferHeight = 600;
          this.IsMouseVisible = true;
          Content.RootDirectory = "Content";
+         cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
       }
 
       #endregion
@@ -174,15 +175,15 @@ namespace GrandTheftCandy
       {
          GraphicsDevice.Clear(Color.CornflowerBlue);
 
-         // Draw a vertical line through the center.
-         Vector2 verticalStart = new Vector2(400,0);
-         Vector2 verticalEnd = new Vector2(400, 600);
-         DrawLine(lineTexture, this.spriteBatch, verticalStart, verticalEnd, true );
+         //// Draw a vertical line through the center.
+         //Vector2 verticalStart = new Vector2(400,0);
+         //Vector2 verticalEnd = new Vector2(400, 600);
+         //DrawLine(lineTexture, this.spriteBatch, verticalStart, verticalEnd, true );
 
-         // Draw a horizontal line through the center.
-         Vector2 horizontalStart = new Vector2 ( 0, 300 );
-         Vector2 horizontalEnd = new Vector2 ( 800, 300 );
-         DrawLine ( lineTexture, this.spriteBatch, horizontalStart, horizontalEnd, false );
+         //// Draw a horizontal line through the center.
+         //Vector2 horizontalStart = new Vector2 ( 0, 300 );
+         //Vector2 horizontalEnd = new Vector2 ( 800, 300 );
+         //DrawLine ( lineTexture, this.spriteBatch, horizontalStart, horizontalEnd, false );
 
          base.Draw(gameTime);
       }
