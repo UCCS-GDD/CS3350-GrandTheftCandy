@@ -46,8 +46,9 @@ namespace GrandTheftCandy
       public Matrix cameraPosition;
 
       Player_Controlled_Sprite player;
-      Sprite_Base_Class lady;
-      Sprite_Base_Class red;
+      NPC_Base_Class mother1;
+      NPC_Base_Class guard1;
+      Sprite_Base_Class candyEntrance;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
       Sprite_Base_Class mallFloor;
@@ -55,7 +56,7 @@ namespace GrandTheftCandy
       Sprite_Base_Class gameBar;
 
       Vector2 screenCenter;
-      Vector2 redStart;
+      Vector2 candyStoreEntrance;
 
       Texture2D lineTexture;
       #endregion
@@ -86,22 +87,27 @@ namespace GrandTheftCandy
          lineTexture = this.Content.Load<Texture2D>(@"Resources\Images\Line");
 
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
-         ladyStart = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 4 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
-         redStart = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width * 3 / 4 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
+         candyStoreEntrance = new Vector2 ( 2600, 200);
+         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller1" };
+         string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
 
          player = new Player_Controlled_Sprite(this, @"Resources\Images\candySprite0", screenCenter, Color.White, true, "Player");
-         lady = new Sprite_Base_Class (this, @"Resources\Images\stroller1", ladyStart, Color.White, true, "Lady");
-         red = new Sprite_Base_Class(this, @"Resources\Images\redsquare", redStart, Color.White, true, "Red");
+         mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 550), Color.White, true, "Mother1", true);
+         guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
+
+         candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Red");
          mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
          mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
-         gameBar = new Sprite_Base_Class (this, @"Resources\Images\gamebar1", new Vector2 (400, 300), false, 100, "Game bar");
+         gameBar = new Sprite_Base_Class (this, @"Resources\Images\gamebar", new Vector2 (400, 300), false, 100, "Game bar");
+         gameBar.Visible = false;
+         candyEntrance.Visible = false;
 
          Splash_Screen splashScreen = new Splash_Screen(this, @"Resources\Images\SplashScreen", screenCenter, Color.White, "Splash Screen");
 
          gameOver = new Sprite_Base_Class(this, @"Resources\Images\gameover0", screenCenter, false, 500, "Game Over 1");
          gameOver.Visible = false;
 
-         winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 500, "Game Over 2");
+         winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
 
          Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
@@ -144,15 +150,12 @@ namespace GrandTheftCandy
             this.Exit ();
          }
 
-         //if (player.collidesHorizontally(red))
-         //{
-         //   player.Visible = false;
-         //   red.Visible = false;
-         //   blue.Visible = false;
-
-         //   System.Threading.Thread.Sleep (50);
-         //   winScreen.Visible = true;
-         //}
+         if (player.boundingBox.Intersects(candyEntrance.boundingBox))
+         {
+            winScreen.Visible = true;
+            player.movementAllowed = false;
+            cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
+         }
 
          //if (player.collidesWithAbove(blue) || player.collidesWithBelow(blue))
          //{

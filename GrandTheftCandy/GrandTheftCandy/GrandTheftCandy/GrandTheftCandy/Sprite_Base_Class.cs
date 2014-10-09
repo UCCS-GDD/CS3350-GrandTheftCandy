@@ -315,6 +315,8 @@ namespace GrandTheftCandy
    {
       #region Member Variables
 
+      private bool m_MovementAllowed;
+
       #endregion
 
       #region Constructors
@@ -323,12 +325,24 @@ namespace GrandTheftCandy
          Color a_renderColor, bool a_collidable, String a_SpriteName)
          : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
-
+         m_MovementAllowed = false;
       }
 
       #endregion
 
       #region Getters and Setters
+
+      public bool movementAllowed
+      {
+         get
+         {
+            return m_MovementAllowed;
+         }
+         set
+         {
+            m_MovementAllowed = value;
+         }
+      }
 
       #endregion
 
@@ -346,102 +360,105 @@ namespace GrandTheftCandy
 
       public override void Update(GameTime gameTime)
       {
-         KeyboardState keyboardInput = Keyboard.GetState();
-
-         #region Move Down
-         if (keyboardInput.IsKeyDown(Keys.S) || keyboardInput.IsKeyDown(Keys.Down)) 
+         if (m_MovementAllowed)
          {
-            if(m_spritePosition.Y < (this.GraphicsDevice.Viewport.Height - 5))
+            KeyboardState keyboardInput = Keyboard.GetState ();
+
+            #region Move Down
+            if (keyboardInput.IsKeyDown (Keys.S) || keyboardInput.IsKeyDown (Keys.Down))
             {
-               m_spritePosition.Y += 5;
-               this.DrawOrder++;
+               if (m_spritePosition.Y < (this.GraphicsDevice.Viewport.Height - 5))
+               {
+                  m_spritePosition.Y += 5;
+                  this.DrawOrder++;
+                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+                  this.Game.Components.CopyTo (spriteList, 0);
+                  for (int i = 0; i < spriteList.Length; i++)
+                  {
+                     if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                     {
+                        m_spritePosition.Y -= 5;
+                        this.DrawOrder--;
+                     }
+                  }
+               }
+            }
+            #endregion
+
+            #region Move Left
+            if (keyboardInput.IsKeyDown (Keys.A) || keyboardInput.IsKeyDown (Keys.Left))
+            {
+               if (m_spritePosition.X - (m_textureImage.Width / 2) > 0)
+               {
+                  m_spritePosition.X -= 5;
+                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+                  this.Game.Components.CopyTo (spriteList, 0);
+                  for (int i = 0; i < spriteList.Length; i++)
+                  {
+                     if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                     {
+                        m_spritePosition.X += 5;
+                     }
+
+                     if (m_spritePosition.X > 400 && m_spritePosition.X < 2600)
+                     {
+                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (400 - m_spritePosition.X, 0, 0);
+                     }
+                     else if (m_spritePosition.X < 400)
+                     {
+                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (0, 0, 0);
+                     }
+                  }
+               }
+            }
+            #endregion
+
+            #region Move Right
+            if (keyboardInput.IsKeyDown (Keys.D) || keyboardInput.IsKeyDown (Keys.Right))
+            {
+               if (m_spritePosition.X < 2600)
+               {
+                  m_spritePosition.X += 5;
+                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+                  this.Game.Components.CopyTo (spriteList, 0);
+                  for (int i = 0; i < spriteList.Length; i++)
+                  {
+                     if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                     {
+                        m_spritePosition.X -= 5;
+                     }
+
+                     if (m_spritePosition.X < 2600 && m_spritePosition.X > 400)
+                     {
+                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (400 - m_spritePosition.X, 0, 0);
+                     }
+                     else if (m_spritePosition.X > 2600)
+                     {
+                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (2600, 0, 0);
+                     }
+                  }
+               }
+            }
+            #endregion
+
+            #region Move Up
+            if (keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up))
+            {
+               m_spritePosition.Y -= 5;
+               this.DrawOrder--;
                Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
                this.Game.Components.CopyTo (spriteList, 0);
                for (int i = 0; i < spriteList.Length; i++)
                {
                   if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
                   {
-                     m_spritePosition.Y -= 5;
-                     this.DrawOrder--;
+                     m_spritePosition.Y += 5;
+                     this.DrawOrder++;
                   }
                }
             }
+            #endregion
          }
-         #endregion
-
-         #region Move Left
-         if (keyboardInput.IsKeyDown(Keys.A) || keyboardInput.IsKeyDown(Keys.Left))
-         {
-            if(m_spritePosition.X - (m_textureImage.Width/2) > 0)
-            {
-               m_spritePosition.X -= 5;
-               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-               this.Game.Components.CopyTo (spriteList, 0);
-               for(int i = 0; i < spriteList.Length; i++)
-               {
-                  if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                  {
-                     m_spritePosition.X += 5;
-                  }
-
-                  if(m_spritePosition.X > 400 && m_spritePosition.X < 2600)
-                  {
-                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (400-m_spritePosition.X, 0, 0);
-                  }
-                  else if(m_spritePosition.X < 400)
-                  {
-                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (0, 0, 0);
-                  }
-               }
-            }
-         }
-         #endregion
-
-         #region Move Right
-         if (keyboardInput.IsKeyDown(Keys.D) || keyboardInput.IsKeyDown(Keys.Right))
-         {
-            if(m_spritePosition.X < 2600)
-            {
-               m_spritePosition.X += 5;
-               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-               this.Game.Components.CopyTo (spriteList, 0);
-               for(int i = 0; i < spriteList.Length; i++)
-               {
-                  if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                  {
-                     m_spritePosition.X -= 5;
-                  }
-
-                  if(m_spritePosition.X < 2600 && m_spritePosition.X >400)
-                  {
-                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (400-m_spritePosition.X, 0, 0);
-                  }
-                  else if(m_spritePosition.X > 2600)
-                  {
-                     ((GTC_Level1) this.Game).cameraPosition = Matrix.CreateTranslation (2600, 0, 0);
-                  }
-               }
-            }
-         }
-         #endregion
-
-         #region Move Up
-         if (keyboardInput.IsKeyDown(Keys.W) || keyboardInput.IsKeyDown(Keys.Up))
-         {
-            m_spritePosition.Y -= 5;
-            this.DrawOrder--;
-            Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-            this.Game.Components.CopyTo (spriteList, 0);
-            for(int i = 0; i < spriteList.Length; i++)
-            {
-               if(this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-               {
-                  m_spritePosition.Y += 5;
-                  this.DrawOrder++;
-               }
-            }
-         }
-         #endregion
 
          base.Update(gameTime);
       }
@@ -621,6 +638,7 @@ namespace GrandTheftCandy
             this.Visible = false;
             this.DrawOrder = 100;
             this.Game.IsMouseVisible = false;
+            ((Player_Controlled_Sprite)((GTC_Level1)this.Game).Components[0]).movementAllowed = true;
          }
 
          base.Update(gameTime);
