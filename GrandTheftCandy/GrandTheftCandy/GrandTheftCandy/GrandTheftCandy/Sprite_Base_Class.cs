@@ -29,6 +29,8 @@ namespace GrandTheftCandy
       protected Vector2 m_spritePosition;
       protected bool m_isSpriteCollidable;
       protected String m_spriteName;
+      protected int m_SpriteWidth;
+      protected int m_SpriteHeight;
 
       #endregion
 
@@ -153,7 +155,7 @@ namespace GrandTheftCandy
          {
             return new Rectangle ((int)(m_spritePosition.X - m_spriteCenter.X),
                (int)(m_spritePosition.Y - m_spriteCenter.Y),
-               50, 50);
+               m_SpriteWidth, m_SpriteHeight);
          }
       }
 
@@ -167,6 +169,8 @@ namespace GrandTheftCandy
          {
             m_textureImage = Game.Content.Load<Texture2D> (m_textureFileName);
             m_spriteCenter = new Vector2 (m_textureImage.Width * 0.5f, m_textureImage.Height * 0.5f);
+            m_SpriteHeight = m_textureImage.Height;
+            m_SpriteWidth = m_textureImage.Width;
          }
 
          base.LoadContent();
@@ -561,6 +565,10 @@ namespace GrandTheftCandy
          {
             m_SpriteVersions[0] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[0]);
          }
+
+         m_spriteCenter = new Vector2 (m_SpriteVersions[0].Height * .5f, m_SpriteVersions[0].Width * .5f);
+         m_SpriteHeight = m_SpriteVersions[0].Height;
+         m_SpriteWidth = m_SpriteVersions[0].Width;
 
          base.LoadContent ();
       }
