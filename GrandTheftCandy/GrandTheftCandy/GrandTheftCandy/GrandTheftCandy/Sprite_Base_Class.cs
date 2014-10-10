@@ -1,5 +1,6 @@
 ﻿/*
  * TODO: See the TODO near the Animated_Sprite class
+ * TODO: Calculate Sprite Width by the texture width by the number of animations.
 */
 
 /*
@@ -229,7 +230,7 @@ namespace GrandTheftCandy
 
       public bool collidesWithBelow (Sprite_Base_Class a_sprite)
       {
-         if ((a_sprite.DrawOrder < this.DrawOrder) && a_sprite.isSpriteCollidable)
+         if ((a_sprite.DrawOrder < this.DrawOrder && a_sprite.DrawOrder + 5 > this.DrawOrder) && a_sprite.isSpriteCollidable)
          {
             return isWithinSpriteBoundry (a_sprite);
          }
@@ -238,11 +239,16 @@ namespace GrandTheftCandy
 
       public bool collidesWithAbove (Sprite_Base_Class a_sprite)
       {
-         if ((a_sprite.DrawOrder > this.DrawOrder) && a_sprite.isSpriteCollidable)
+         if ((a_sprite.DrawOrder > this.DrawOrder && a_sprite.DrawOrder - 5 < this.DrawOrder) && a_sprite.isSpriteCollidable)
          {
             return isWithinSpriteBoundry (a_sprite);
          }
          return false;
+      }
+
+      public bool collides (Sprite_Base_Class a_sprite)
+      {
+         return (collidesHorizontally (a_sprite) || collidesWithAbove (a_sprite) || collidesWithBelow (a_sprite));
       }
 
       #endregion
@@ -617,7 +623,7 @@ namespace GrandTheftCandy
       #region Functions
 
       #endregion
-   }
+   } // End NPC_Base_Class
 
    class Splash_Screen : Sprite_Base_Class
    {

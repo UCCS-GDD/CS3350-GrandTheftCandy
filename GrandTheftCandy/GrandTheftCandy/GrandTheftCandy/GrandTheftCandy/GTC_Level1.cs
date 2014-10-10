@@ -87,15 +87,15 @@ namespace GrandTheftCandy
          lineTexture = this.Content.Load<Texture2D>(@"Resources\Images\Line");
 
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
-         candyStoreEntrance = new Vector2 ( 2600, 200);
-         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller1" };
+         candyStoreEntrance = new Vector2 ( 2620, 200);
+         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
          string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
 
-         player = new Player_Controlled_Sprite(this, @"Resources\Images\candySprite0", screenCenter, Color.White, true, "Player");
+         player = new Player_Controlled_Sprite (this, @"Resources\Images\mainSpriteLeftStill", screenCenter, Color.White, true, "Player");
          mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother1", true);
          guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
 
-         candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Red");
+         candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
          mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
          mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
          gameBar = new Sprite_Base_Class (this, @"Resources\Images\gamebar", new Vector2 (400, 300), false, 100, "Game bar");
@@ -110,8 +110,9 @@ namespace GrandTheftCandy
          winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
 
-         //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
-         //MediaPlayer.Play(backgroundSound);
+         Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
+         MediaPlayer.Play(backgroundSound);
+         MediaPlayer.Volume = 50;
 
          base.Initialize();
         }
@@ -150,22 +151,24 @@ namespace GrandTheftCandy
             this.Exit ();
          }
 
-         if (player.boundingBox.Intersects(candyEntrance.boundingBox))
+         if (player.isWithinSpriteBoundry(candyEntrance))
          {
             winScreen.Visible = true;
             player.movementAllowed = false;
             cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
          }
 
-         //if (player.collidesWithAbove(blue) || player.collidesWithBelow(blue))
-         //{
-         //   player.Visible = false;
-         //   red.Visible = false;
-         //   blue.Visible = false;
+         if (player.collidesWithAbove (mother1) || player.collidesWithBelow (mother1))
+         {
+            mother1.hasCandy = false;
+         }
 
-         //   System.Threading.Thread.Sleep (50);
-         //   gameOver.Visible = true;
-         //}
+         if (player.collides(guard1))
+         {
+            cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
+            player.movementAllowed = false;
+            gameOver.Visible = true;
+         }
 
          base.Update(gameTime);
       }
