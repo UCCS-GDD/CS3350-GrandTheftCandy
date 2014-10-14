@@ -120,7 +120,7 @@ namespace GrandTheftCandy
          guard1.moveable = true;
          guard1.patrolPath = guard1Path;
          guard1.movementSpeed = new Vector2 (2, 2);
-         guard1.detectionRadius = 200;
+         guard1.detectionRadius = 100;
          #endregion
 
          //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
@@ -176,7 +176,7 @@ namespace GrandTheftCandy
             mother1.hasCandy = false;
          }
 
-         if (player.collides(guard1))
+         if (player.collides(guard1) || player.collidesHorizontally (guard1))
          {
             cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
             player.movementAllowed = false;

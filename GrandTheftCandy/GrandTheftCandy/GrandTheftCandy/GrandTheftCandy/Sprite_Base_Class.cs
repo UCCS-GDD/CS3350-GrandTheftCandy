@@ -242,24 +242,25 @@ namespace GrandTheftCandy
       {
          if (this.DrawOrder == a_sprite.DrawOrder && a_sprite.isSpriteCollidable)
          {
-            if (isWithinSpriteBoundry (a_sprite))
-            {
-               return isWithinHalfSpriteBoundry (a_sprite);
-            }
+            return isWithinSpriteBoundry (a_sprite);
          }
          return false;
       }
 
       public bool collidesHalfHorizontally (Sprite_Base_Class a_sprite)
       {
-         return isWithinSpriteBoundry (a_sprite);
+         if (this.DrawOrder == a_sprite.DrawOrder && a_sprite.isSpriteCollidable)
+         {
+            return isWithinHalfSpriteBoundry (a_sprite);
+         }
+         return false;
       }
 
       public bool collidesWithBelow (Sprite_Base_Class a_sprite)
       {
          if ((a_sprite.DrawOrder < this.DrawOrder && a_sprite.DrawOrder + 5 > this.DrawOrder) && a_sprite.isSpriteCollidable)
          {
-            return isWithinSpriteBoundry (a_sprite);
+            return isWithinHalfSpriteBoundry (a_sprite);
          }
          return false;
       }
@@ -268,14 +269,19 @@ namespace GrandTheftCandy
       {
          if ((a_sprite.DrawOrder > this.DrawOrder && a_sprite.DrawOrder - 5 < this.DrawOrder) && a_sprite.isSpriteCollidable)
          {
-            return isWithinSpriteBoundry (a_sprite);
+            return isWithinHalfSpriteBoundry (a_sprite);
          }
          return false;
       }
 
       public bool collides (Sprite_Base_Class a_sprite)
       {
-         return (collidesHorizontally (a_sprite) || collidesWithAbove (a_sprite) || collidesWithBelow (a_sprite));
+         bool collidesWith = collidesWithAbove (a_sprite) || collidesWithBelow (a_sprite);
+         if (collidesHorizontally(a_sprite))
+         {
+            collidesWith = collidesWith || collidesHalfHorizontally (a_sprite);
+         }
+         return collidesWith;
       }
 
       protected void calculateDrawOrder ()
@@ -450,7 +456,7 @@ namespace GrandTheftCandy
                   this.Game.Components.CopyTo (spriteList, 0);
                   for (int i = 0; i < spriteList.Length; i++)
                   {
-                     if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
                      {
                         m_spritePosition.X += 5;
                      }
@@ -478,7 +484,7 @@ namespace GrandTheftCandy
                   this.Game.Components.CopyTo (spriteList, 0);
                   for (int i = 0; i < spriteList.Length; i++)
                   {
-                     if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
                      {
                         m_spritePosition.X -= 5;
                      }
