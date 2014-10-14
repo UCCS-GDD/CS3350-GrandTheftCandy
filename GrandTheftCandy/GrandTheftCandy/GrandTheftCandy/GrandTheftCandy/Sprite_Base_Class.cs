@@ -549,6 +549,7 @@ namespace GrandTheftCandy
       private bool m_IsMother;
       private bool m_HasCandy;
       private bool m_FollowingPlayer;
+      private bool m_Moveable;
       private int m_DetectionRadius;
       private int m_PathIndex;
       private Vector2 m_CurrentDestination;
@@ -572,6 +573,7 @@ namespace GrandTheftCandy
          m_SpriteVersions = new Texture2D[2];
          m_PatrolPath = new Vector2[2];
          m_FollowingPlayer = false;
+         m_Moveable = false;
          m_MovementSpeed = new Vector2 (5, 5);
          m_DetectionRadius = 200;
          m_PathIndex = 0;
@@ -614,6 +616,18 @@ namespace GrandTheftCandy
          set
          {
             m_FollowingPlayer = value;
+         }
+      }
+
+      public bool moveable
+      {
+         get
+         {
+            return m_Moveable;
+         }
+         set
+         {
+            m_Moveable = value;
          }
       }
 
@@ -686,7 +700,7 @@ namespace GrandTheftCandy
       public override void Update (GameTime gameTime)
       {
          #region Guard Follow Behavior
-         if (!isMother)
+         if (!isMother && m_Moveable)
          {
             // If the player is within the detection radius of the guard
             bool withinDetectionRadius = ((((Player_Controlled_Sprite)((GTC_Level1)this.Game)

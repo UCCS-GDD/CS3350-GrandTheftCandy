@@ -117,9 +117,10 @@ namespace GrandTheftCandy
          guard1Path[0] = new Vector2 (500, 400);
          guard1Path[1] = new Vector2 (1500, 400);
 
+         guard1.moveable = true;
          guard1.patrolPath = guard1Path;
-         guard1.movementSpeed = new Vector2 (2, 5);
-         guard1.detectionRadius = 100;
+         guard1.movementSpeed = new Vector2 (2, 2);
+         guard1.detectionRadius = 200;
          #endregion
 
          //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
