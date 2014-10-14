@@ -436,7 +436,7 @@ namespace GrandTheftCandy
                   this.Game.Components.CopyTo (spriteList, 0);
                   for (int i = 0; i < spriteList.Length; i++)
                   {
-                     if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
                      {
                         m_spritePosition.Y -= 5;
                         this.DrawOrder--;
@@ -511,7 +511,7 @@ namespace GrandTheftCandy
                this.Game.Components.CopyTo (spriteList, 0);
                for (int i = 0; i < spriteList.Length; i++)
                {
-                  if (this.collidesHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+                  if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
                   {
                      m_spritePosition.Y += 5;
                      this.DrawOrder++;
@@ -729,7 +729,7 @@ namespace GrandTheftCandy
             else
             {
                // Otherwise, test if the guard has reached its current destination.
-               if (m_spritePosition == m_PatrolPath[m_PathIndex])
+               if (m_spritePosition == m_PatrolPath[m_PathIndex] || isWithinDistanceOfDestination(3))
                {
                   if ((m_PathIndex + 1) >= m_PatrolPath.Length)
                   {
@@ -788,6 +788,15 @@ namespace GrandTheftCandy
       #endregion
 
       #region Functions
+
+      protected bool isWithinDistanceOfDestination (int a_Disatance)
+      {
+         bool isWithinDistance;
+
+         isWithinDistance = (this.m_CurrentDestination - this.spritePosition).Length () < a_Disatance;
+
+         return isWithinDistance;
+      }
 
       #endregion
    } // End NPC_Base_Class

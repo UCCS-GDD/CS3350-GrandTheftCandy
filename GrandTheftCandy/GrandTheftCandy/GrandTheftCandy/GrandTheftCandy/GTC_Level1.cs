@@ -84,8 +84,6 @@ namespace GrandTheftCandy
       /// </summary>
       protected override void Initialize()
       {
-         lineTexture = this.Content.Load<Texture2D>(@"Resources\Images\Line");
-
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
          candyStoreEntrance = new Vector2 ( 2620, 200);
          string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
@@ -113,10 +111,13 @@ namespace GrandTheftCandy
          #endregion
 
          #region Set Guard behavior
+         // Create a path of two waypoints for the guard to follow.
          Vector2[] guard1Path = new Vector2[2];
          guard1Path[0] = new Vector2 (500, 400);
          guard1Path[1] = new Vector2 (1500, 400);
 
+
+         // Enable the guard to move, set the path, speed, and detection radius.
          guard1.moveable = true;
          guard1.patrolPath = guard1Path;
          guard1.movementSpeed = new Vector2 (2, 2);
@@ -158,12 +159,14 @@ namespace GrandTheftCandy
          // Allows the game to exit.
          KeyboardState keyboardState = Keyboard.GetState ();
 
+         //Exits the game
          if (keyboardState.IsKeyDown (Keys.Escape) ||
             GamePad.GetState (PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
          {
             this.Exit ();
          }
 
+         // Win condition
          if (player.isWithinSpriteBoundry(candyEntrance))
          {
             winScreen.Visible = true;
@@ -171,12 +174,14 @@ namespace GrandTheftCandy
             cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
          }
 
+         // Stealing Candy
          if (player.collidesWithAbove (mother1) || player.collidesWithBelow (mother1))
          {
             mother1.hasCandy = false;
          }
 
-         if (player.collides(guard1) || player.collidesHorizontally (guard1))
+         // End condition (Player gets caught)
+         if ((player.collides(guard1) || player.collidesHorizontally (guard1)) && guard1.followingPlayer)
          {
             cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
             player.movementAllowed = false;
@@ -193,16 +198,6 @@ namespace GrandTheftCandy
       protected override void Draw(GameTime gameTime)
       {
          GraphicsDevice.Clear(Color.CornflowerBlue);
-
-         //// Draw a vertical line through the center.
-         //Vector2 verticalStart = new Vector2(400,0);
-         //Vector2 verticalEnd = new Vector2(400, 600);
-         //DrawLine(lineTexture, this.spriteBatch, verticalStart, verticalEnd, true );
-
-         //// Draw a horizontal line through the center.
-         //Vector2 horizontalStart = new Vector2 ( 0, 300 );
-         //Vector2 horizontalEnd = new Vector2 ( 800, 300 );
-         //DrawLine ( lineTexture, this.spriteBatch, horizontalStart, horizontalEnd, false );
 
          base.Draw(gameTime);
       }
@@ -245,7 +240,5 @@ namespace GrandTheftCandy
       }
 
       #endregion
-
-      public Vector2 ladyStart { get; set; }
    }
 }
