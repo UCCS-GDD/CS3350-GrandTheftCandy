@@ -91,6 +91,7 @@ namespace GrandTheftCandy
          string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
          string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
 
+         #region Sprite Creation
          player = new Player_Controlled_Sprite (this, @"Resources\Images\mainSpriteLeftStill", screenCenter, Color.White, true, "Player");
          mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother1", true);
          guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
@@ -109,10 +110,21 @@ namespace GrandTheftCandy
 
          winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
+         #endregion
 
-         Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
-         MediaPlayer.Play(backgroundSound);
-         MediaPlayer.Volume = 50;
+         #region Set Guard behavior
+         Vector2[] guard1Path = new Vector2[2];
+         guard1Path[0] = new Vector2 (500, 400);
+         guard1Path[1] = new Vector2 (1500, 400);
+
+         guard1.patrolPath = guard1Path;
+         guard1.movementSpeed = new Vector2 (2, 5);
+         guard1.detectionRadius = 100;
+         #endregion
+
+         //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
+         //MediaPlayer.Play(backgroundSound);
+         //MediaPlayer.Volume = 50;
 
          base.Initialize();
         }

@@ -54,7 +54,7 @@ namespace GrandTheftCandy
             m_textureFileName = a_textureFileName;
          }
          m_spritePosition = a_startingPosition;
-         this.DrawOrder = (((int)m_spritePosition.Y - 200) / 5) + 5;
+         calculateDrawOrder ();
          m_spriteRenderColor = a_renderColor;
          m_isSpriteCollidable = a_collidable;
          m_spriteName = a_SpriteName;
@@ -160,6 +160,16 @@ namespace GrandTheftCandy
          }
       }
 
+      public Rectangle halfWidthBoundingBox
+      {
+         get
+         {
+            return new Rectangle ((int)(m_spritePosition.X - (m_spriteCenter.X/2)),
+               (int)(m_spritePosition.Y - m_spriteCenter.Y),
+               (m_SpriteWidth/2), m_SpriteHeight);
+         }
+      }
+
       #endregion
 
       #region Overridden Functions
@@ -214,6 +224,15 @@ namespace GrandTheftCandy
          return false;
       }
 
+      public bool isWithinHalfSpriteBoundry (Sprite_Base_Class a_sprite)
+      {
+         if (this.halfWidthBoundingBox.Intersects (a_sprite.halfWidthBoundingBox))
+         {
+            return true;
+         }
+         return false;
+      }
+
       /// <summary>
       /// Determines if two sprites collide when on the same srawing level.
       /// </summary>
@@ -223,9 +242,17 @@ namespace GrandTheftCandy
       {
          if (this.DrawOrder == a_sprite.DrawOrder && a_sprite.isSpriteCollidable)
          {
-            return isWithinSpriteBoundry (a_sprite);
+            if (isWithinSpriteBoundry (a_sprite))
+            {
+               return isWithinHalfSpriteBoundry (a_sprite);
+            }
          }
          return false;
+      }
+
+      public bool collidesHalfHorizontally (Sprite_Base_Class a_sprite)
+      {
+         return isWithinSpriteBoundry (a_sprite);
       }
 
       public bool collidesWithBelow (Sprite_Base_Class a_sprite)
@@ -249,6 +276,11 @@ namespace GrandTheftCandy
       public bool collides (Sprite_Base_Class a_sprite)
       {
          return (collidesHorizontally (a_sprite) || collidesWithAbove (a_sprite) || collidesWithBelow (a_sprite));
+      }
+
+      protected void calculateDrawOrder ()
+      {
+         this.DrawOrder = (((int)m_spritePosition.Y - 200) / 5) + 5;
       }
 
       #endregion
@@ -356,6 +388,14 @@ namespace GrandTheftCandy
          set
          {
             m_MovementAllowed = value;
+         }
+      }
+
+      public Vector2 playerPosition
+      {
+         get
+         {
+            return m_spritePosition;
          }
       }
 
@@ -508,6 +548,12 @@ namespace GrandTheftCandy
       private Texture2D[] m_SpriteVersions;
       private bool m_IsMother;
       private bool m_HasCandy;
+      private bool m_FollowingPlayer;
+      private int m_DetectionRadius;
+      private int m_PathIndex;
+      private Vector2 m_CurrentDestination;
+      private Vector2 m_MovementSpeed;
+      private Vector2[] m_PatrolPath;
 
       #endregion
 
@@ -524,6 +570,11 @@ namespace GrandTheftCandy
          }
          m_SpriteVersionTextureNames = a_textureFileNames;
          m_SpriteVersions = new Texture2D[2];
+         m_PatrolPath = new Vector2[2];
+         m_FollowingPlayer = false;
+         m_MovementSpeed = new Vector2 (5, 5);
+         m_DetectionRadius = 200;
+         m_PathIndex = 0;
       }
 
       #endregion
@@ -551,6 +602,54 @@ namespace GrandTheftCandy
          set
          {
             m_IsMother = value;
+         }
+      }
+
+      public bool followingPlayer
+      {
+         get
+         {
+            return m_FollowingPlayer;
+         }
+         set
+         {
+            m_FollowingPlayer = value;
+         }
+      }
+
+      public Vector2 currentDestination
+      {
+         get
+         {
+            return m_CurrentDestination;
+         }
+         set
+         {
+            m_CurrentDestination = value;
+         }
+      }
+
+      public Vector2 movementSpeed
+      {
+         set
+         {
+            m_MovementSpeed = value;
+         }
+      }
+
+      public Vector2[] patrolPath
+      {
+         set
+         {
+            m_PatrolPath = value;
+         }
+      }
+
+      public int detectionRadius
+      {
+         set
+         {
+            m_DetectionRadius = value;
          }
       }
 
@@ -586,6 +685,54 @@ namespace GrandTheftCandy
 
       public override void Update (GameTime gameTime)
       {
+         #region Guard Follow Behavior
+         if (!isMother)
+         {
+            // If the player is within the detection radius of the guard
+            bool withinDetectionRadius = ((((Player_Controlled_Sprite)((GTC_Level1)this.Game)
+               .Components[0]).playerPosition - this.m_spritePosition).Length ()) < m_DetectionRadius;
+
+            if (withinDetectionRadius && !m_FollowingPlayer)
+            {
+               m_FollowingPlayer = true;
+            }
+            else if (!withinDetectionRadius && m_FollowingPlayer)
+            {
+               m_FollowingPlayer = false;
+            }
+
+            // If the guard is currently following the player, set the current destination to the players position.
+            if (m_FollowingPlayer)
+            {
+               m_CurrentDestination = ((Player_Controlled_Sprite)((GTC_Level1)this.Game).Components[0]).playerPosition;
+            }
+            else
+            {
+               // Otherwise, test if the guard has reached its current destination.
+               if (m_spritePosition == m_PatrolPath[m_PathIndex])
+               {
+                  if ((m_PathIndex + 1) >= m_PatrolPath.Length)
+                  {
+                     m_PathIndex = 0;
+                  }
+                  else
+                  {
+                     m_PathIndex++;
+                  }
+               }
+               // Set the new destination.
+               m_CurrentDestination = m_PatrolPath[m_PathIndex];
+            }
+
+            // Calculate the new movement vector based on the current destination.
+            Vector2 movementDestination = m_CurrentDestination - this.spritePosition;
+            movementDestination.Normalize ();
+
+            this.m_spritePosition += (movementDestination * m_MovementSpeed);
+            calculateDrawOrder ();
+         }
+         #endregion
+
          base.Update (gameTime);
       }
 
