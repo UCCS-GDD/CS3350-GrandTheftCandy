@@ -1,6 +1,6 @@
 /*
  * Grand Theft Candy
- * Level 1 - Project 1
+ * Level 1 - Prototype 1
  * Simple XNA Game
  * Matthew Rawlins
  * Jeffrey St.Germain  
@@ -47,7 +47,7 @@ namespace GrandTheftCandy
 
       public Player_Controlled_Sprite player;
       NPC_Base_Class[] mothers;
-      NPC_Base_Class guard1;
+      NPC_Base_Class[] guards;
       Sprite_Base_Class candyEntrance;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
@@ -71,6 +71,7 @@ namespace GrandTheftCandy
          Content.RootDirectory = "Content";
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
          mothers = new NPC_Base_Class[3];
+         guards = new NPC_Base_Class[2];
       }
 
       #endregion
@@ -85,19 +86,21 @@ namespace GrandTheftCandy
       protected override void Initialize()
       {
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
-         candyStoreEntrance = new Vector2 ( 2620, 200);
+         candyStoreEntrance = new Vector2 ( 2640, 200);
          string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
          string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
 
          #region Sprite Creation
+
          player = new Player_Controlled_Sprite (this, @"Resources\Images\mainSpriteLeftStill", screenCenter, Color.White, true, "Player");
          mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother0", true);
          mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 250), Color.White, true, "Mother1", true);
          mothers[2] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2250, 400), Color.White, true, "Mother2", true);
-         guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
+         guards[0] = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard0", false);
+         guards[1] = new NPC_Base_Class (this, GuardSprite, new Vector2 (2000, 500), Color.White, true, "Guard1", false);
 
          candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
-         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
+         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 400), false, 0, "Mall Floor");
          mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
          gameBar = new Game_Bar (this, @"Resources\Images\gamebar", new Vector2 (400, 300), Color.White, "Game bar");
          candyEntrance.Visible = false;
@@ -110,20 +113,27 @@ namespace GrandTheftCandy
 
          winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
+
          #endregion
 
          #region Set Guard behavior
+
          // Create a path of two waypoints for the guard to follow.
          Vector2[] guard1Path = new Vector2[2];
          guard1Path[0] = new Vector2 (500, 400);
-         guard1Path[1] = new Vector2 (2000, 400);
+         guard1Path[1] = new Vector2 (1250, 400);
 
+         Vector2[] guard2Path = new Vector2[2];
+         guard2Path[0] = new Vector2 (1500, 500);
+         guard2Path[1] = new Vector2 (2500, 500);
 
          // Enable the guard to move, set the path, speed, and detection radius.
-         guard1.moveable = true;
-         guard1.patrolPath = guard1Path;
-         guard1.movementSpeed = new Vector2 (4, 4);
-         guard1.detectionRadius = 0;
+         guards[0].moveable = guards[1].moveable = true;
+         guards[0].movementSpeed = guards[1].movementSpeed =new Vector2 (4, 4);
+         guards[0].detectionRadius = guards[1].detectionRadius = 0;
+         guards[0].patrolPath = guard1Path;
+         guards[1].patrolPath = guard2Path;
+
          #endregion
 
          //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
@@ -177,21 +187,29 @@ namespace GrandTheftCandy
          }
 
          // Stealing Candy
-         for (int i = 0; i < mothers.Length; i++ )
+         for (int i = 0; i < mothers.Length; i++)
+         {
             if ((player.collidesWithAbove (mothers[i]) || player.collidesWithBelow (mothers[i])) && mothers[i].hasCandy)
             {
                mothers[i].hasCandy = false;
                mothers[i].candyRespawnTimer = 150;
                player.candyCount++;
-               guard1.detectionRadius = 50 * player.candyCount;
+               for (int c = 0; c < guards.Length; c++)
+               {
+                  guards[c].detectionRadius = 50 * player.candyCount;
+               }
             }
+         }
 
          // End condition (Player gets caught)
-         if ((player.collides(guard1) || player.collidesHorizontally (guard1)) && guard1.followingPlayer)
+         for (int i = 0; i < guards.Length; i++)
          {
-            cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
-            player.movementAllowed = false;
-            gameOver.Visible = true;
+            if ((player.collides (guards[i]) || player.collidesHorizontally (guards[i])) && guards[i].followingPlayer)
+            {
+               cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
+               player.movementAllowed = false;
+               gameOver.Visible = true;
+            }
          }
 
          base.Update(gameTime);

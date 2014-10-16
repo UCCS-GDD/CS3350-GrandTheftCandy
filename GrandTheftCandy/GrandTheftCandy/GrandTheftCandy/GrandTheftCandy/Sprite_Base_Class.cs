@@ -491,7 +491,7 @@ namespace GrandTheftCandy
             #region Move Right
             if (keyboardInput.IsKeyDown (Keys.D) || keyboardInput.IsKeyDown (Keys.Right))
             {
-               if (m_spritePosition.X < 2600)
+               if (m_spritePosition.X < 3000)
                {
                   m_spritePosition.X += 5;
                   Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
@@ -509,7 +509,7 @@ namespace GrandTheftCandy
                      }
                      else if (m_spritePosition.X > 2600)
                      {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (2600, 0, 0);
+                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (-2200, 0, 0);
                      }
                   }
                }
@@ -517,7 +517,7 @@ namespace GrandTheftCandy
             #endregion
 
             #region Move Up
-            if (keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up))
+            if ((keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up)) && this.spritePosition.Y > 190)
             {
                m_spritePosition.Y -= 5;
                this.DrawOrder--;
