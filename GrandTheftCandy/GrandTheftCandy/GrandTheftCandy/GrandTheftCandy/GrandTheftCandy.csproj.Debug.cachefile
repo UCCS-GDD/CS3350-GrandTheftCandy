@@ -1,4 +1,8 @@
 Content\Resources\Sounds\gameMusic.xnb
+Content\Resources\Images\mainSpriteDownStill.xnb
+Content\Resources\Images\mainSpriteLeftStill.xnb
+Content\Resources\Images\mainSpriteRightStill.xnb
+Content\Resources\Images\mainSpriteUpStill.xnb
 Content\Resources\Images\bluesquare.xnb
 Content\Resources\Images\candiesSprite.xnb
 Content\Resources\Images\candysprite0.xnb
@@ -19,8 +23,5 @@ Content\Resources\Images\SplashScreen.xnb
 Content\Resources\Images\stroller1.xnb
 Content\Resources\Images\stroller2.xnb
 Content\Resources\Images\winner.xnb
-Content\Resources\Images\mainSpriteDownStill.xnb
-Content\Resources\Images\mainSpriteLeftStill.xnb
-Content\Resources\Images\mainSpriteRightStill.xnb
-Content\Resources\Images\mainSpriteUpStill.xnb
+Content\SpriteFont1.xnb
 Content\Resources\Sounds\gameMusic.wma

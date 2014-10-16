@@ -45,20 +45,19 @@ namespace GrandTheftCandy
       public SpriteBatch spriteBatch;
       public Matrix cameraPosition;
 
-      Player_Controlled_Sprite player;
-      NPC_Base_Class mother1;
+      public Player_Controlled_Sprite player;
+      NPC_Base_Class[] mothers;
       NPC_Base_Class guard1;
       Sprite_Base_Class candyEntrance;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
       Sprite_Base_Class mallFloor;
       Sprite_Base_Class mallWall;
-      Sprite_Base_Class gameBar;
+      public Game_Bar gameBar;
 
       Vector2 screenCenter;
       Vector2 candyStoreEntrance;
 
-      Texture2D lineTexture;
       #endregion
 
       #region Constructors
@@ -71,6 +70,7 @@ namespace GrandTheftCandy
          this.IsMouseVisible = true;
          Content.RootDirectory = "Content";
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
+         mothers = new NPC_Base_Class[3];
       }
 
       #endregion
@@ -91,15 +91,17 @@ namespace GrandTheftCandy
 
          #region Sprite Creation
          player = new Player_Controlled_Sprite (this, @"Resources\Images\mainSpriteLeftStill", screenCenter, Color.White, true, "Player");
-         mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother1", true);
+         mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother0", true);
+         mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 250), Color.White, true, "Mother1", true);
+         mothers[2] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2250, 400), Color.White, true, "Mother2", true);
          guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
 
          candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
          mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
          mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
-         gameBar = new Sprite_Base_Class (this, @"Resources\Images\gamebar", new Vector2 (400, 300), false, 100, "Game bar");
-         gameBar.Visible = false;
+         gameBar = new Game_Bar (this, @"Resources\Images\gamebar", new Vector2 (400, 300), Color.White, "Game bar");
          candyEntrance.Visible = false;
+         gameBar.Visible = false;
 
          Splash_Screen splashScreen = new Splash_Screen(this, @"Resources\Images\SplashScreen", screenCenter, Color.White, "Splash Screen");
 
@@ -114,14 +116,14 @@ namespace GrandTheftCandy
          // Create a path of two waypoints for the guard to follow.
          Vector2[] guard1Path = new Vector2[2];
          guard1Path[0] = new Vector2 (500, 400);
-         guard1Path[1] = new Vector2 (1500, 400);
+         guard1Path[1] = new Vector2 (2000, 400);
 
 
          // Enable the guard to move, set the path, speed, and detection radius.
          guard1.moveable = true;
          guard1.patrolPath = guard1Path;
-         guard1.movementSpeed = new Vector2 (2, 2);
-         guard1.detectionRadius = 100;
+         guard1.movementSpeed = new Vector2 (4, 4);
+         guard1.detectionRadius = 0;
          #endregion
 
          //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
@@ -175,10 +177,14 @@ namespace GrandTheftCandy
          }
 
          // Stealing Candy
-         if (player.collidesWithAbove (mother1) || player.collidesWithBelow (mother1))
-         {
-            mother1.hasCandy = false;
-         }
+         for (int i = 0; i < mothers.Length; i++ )
+            if ((player.collidesWithAbove (mothers[i]) || player.collidesWithBelow (mothers[i])) && mothers[i].hasCandy)
+            {
+               mothers[i].hasCandy = false;
+               mothers[i].candyRespawnTimer = 150;
+               player.candyCount++;
+               guard1.detectionRadius = 50 * player.candyCount;
+            }
 
          // End condition (Player gets caught)
          if ((player.collides(guard1) || player.collidesHorizontally (guard1)) && guard1.followingPlayer)

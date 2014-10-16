@@ -19,7 +19,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GrandTheftCandy
 {
-   class Sprite_Base_Class : DrawableGameComponent
+   public class Sprite_Base_Class : DrawableGameComponent
    {
       #region Member Variables
 
@@ -364,11 +364,12 @@ namespace GrandTheftCandy
       #endregion
    } // End Animated_Sprite Class.
 
-   class Player_Controlled_Sprite : Sprite_Base_Class
+   public class Player_Controlled_Sprite : Sprite_Base_Class
    {
       #region Member Variables
 
       private bool m_MovementAllowed;
+      private int m_CandyCount;
 
       #endregion
 
@@ -379,6 +380,7 @@ namespace GrandTheftCandy
          : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_MovementAllowed = false;
+         m_CandyCount = 0;
       }
 
       #endregion
@@ -394,6 +396,18 @@ namespace GrandTheftCandy
          set
          {
             m_MovementAllowed = value;
+         }
+      }
+
+      public int candyCount
+      {
+         get
+         {
+            return m_CandyCount;
+         }
+         set
+         {
+            m_CandyCount = value;
          }
       }
 
@@ -546,7 +560,7 @@ namespace GrandTheftCandy
    /// 
    /// For a guard, just pass in a single sprite name and leave the second as null.
    /// </summary>
-   class NPC_Base_Class : Sprite_Base_Class
+   public class NPC_Base_Class : Sprite_Base_Class
    {
       #region Member Variables
 
@@ -558,6 +572,7 @@ namespace GrandTheftCandy
       private bool m_Moveable;
       private int m_DetectionRadius;
       private int m_PathIndex;
+      private int m_RespawnCandyTimer;
       private Vector2 m_CurrentDestination;
       private Vector2 m_MovementSpeed;
       private Vector2[] m_PatrolPath;
@@ -574,6 +589,7 @@ namespace GrandTheftCandy
          if(m_IsMother)
          {
             m_HasCandy = true;
+            m_RespawnCandyTimer = 0;
          }
          m_SpriteVersionTextureNames = a_textureFileNames;
          m_SpriteVersions = new Texture2D[2];
@@ -637,6 +653,22 @@ namespace GrandTheftCandy
          }
       }
 
+      public int detectionRadius
+      {
+         set
+         {
+            m_DetectionRadius = value;
+         }
+      }
+
+      public int candyRespawnTimer
+      {
+         set
+         {
+            m_RespawnCandyTimer = value;
+         }
+      }
+
       public Vector2 currentDestination
       {
          get
@@ -665,13 +697,6 @@ namespace GrandTheftCandy
          }
       }
 
-      public int detectionRadius
-      {
-         set
-         {
-            m_DetectionRadius = value;
-         }
-      }
 
       #endregion
 
@@ -709,8 +734,8 @@ namespace GrandTheftCandy
          if (!isMother && m_Moveable)
          {
             // If the player is within the detection radius of the guard
-            bool withinDetectionRadius = ((((Player_Controlled_Sprite)((GTC_Level1)this.Game)
-               .Components[0]).playerPosition - this.m_spritePosition).Length ()) < m_DetectionRadius;
+
+            bool withinDetectionRadius = (((GTC_Level1)this.Game).player.playerPosition - this.m_spritePosition).Length () < m_DetectionRadius;
 
             if (withinDetectionRadius && !m_FollowingPlayer)
             {
@@ -750,6 +775,20 @@ namespace GrandTheftCandy
 
             this.m_spritePosition += (movementDestination * m_MovementSpeed);
             calculateDrawOrder ();
+         }
+         #endregion
+
+         #region Mother Candy Respawn
+         if (m_IsMother)
+         {
+            if (!m_HasCandy && m_RespawnCandyTimer > 0)
+            {
+               m_RespawnCandyTimer--;
+            }
+            else if (!m_HasCandy && m_RespawnCandyTimer < 1)
+            {
+               m_HasCandy = true;
+            }
          }
          #endregion
 
@@ -801,7 +840,7 @@ namespace GrandTheftCandy
       #endregion
    } // End NPC_Base_Class
 
-   class Splash_Screen : Sprite_Base_Class
+   public class Splash_Screen : Sprite_Base_Class
    {
       #region Member Variables
 
@@ -843,6 +882,7 @@ namespace GrandTheftCandy
             this.DrawOrder = 100;
             this.Game.IsMouseVisible = false;
             ((Player_Controlled_Sprite)((GTC_Level1)this.Game).Components[0]).movementAllowed = true;
+            ((GTC_Level1)this.Game).gameBar.Visible = true;
          }
 
          base.Update(gameTime);
@@ -859,4 +899,72 @@ namespace GrandTheftCandy
 
       #endregion
    } // End Splash_Screen Class.
+
+   public class Game_Bar : Sprite_Base_Class
+   {
+      
+      #region Member Variables
+
+      private SpriteFont m_DrawableFont;
+      private Vector2 m_CandyCounterPosition;
+
+      #endregion
+
+      #region Constructors
+
+      public Game_Bar (Game a_game, String a_textureFileName, Vector2 a_startingPosition, Color a_renderColor, String a_SpriteName)
+         : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, false, a_SpriteName)
+      {
+         m_CandyCounterPosition = new Vector2 (5, 10);
+         this.DrawOrder = 1000;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent()
+      {
+         m_DrawableFont = this.Game.Content.Load<SpriteFont> ("SpriteFont1");
+
+         base.LoadContent();
+      }
+
+      public override void Initialize()
+      {
+         base.Initialize();
+      }
+
+      public override void Update(GameTime gameTime)
+      {
+         base.Update(gameTime);
+      }
+
+      public override void Draw(GameTime gameTime)
+      {
+         SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
+
+         sb.Begin ();
+
+         sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+         if (this.Visible)
+         {
+            string s_CandyCountString = "Candy Count: " + ((GTC_Level1)this.Game).player.candyCount; 
+            sb.DrawString (m_DrawableFont, s_CandyCountString, m_CandyCounterPosition, Color.Black);
+         }
+
+         sb.End ();
+      }
+
+      #endregion
+
+      #region Functions
+
+      #endregion
+   }
 }
