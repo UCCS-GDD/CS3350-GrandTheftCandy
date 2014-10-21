@@ -296,12 +296,12 @@ namespace GrandTheftCandy
 
    } // End Sprite_Base_Class.
 
-   // TODO: Hook Player Class into Animated Sprite class and ensure that animation works.
+   // TODO: Tie in NPC Class to Animated Sprites
    /// <summary>
    /// When providing the file names for the animated textures,
    /// provide them in the same order as the enum spriteAnimationSequence.
    /// </summary>
-   class Animated_Sprite : Sprite_Base_Class
+   public class Animated_Sprite : Sprite_Base_Class
    {
       #region Member Variables
 
@@ -324,9 +324,10 @@ namespace GrandTheftCandy
 
       public Animated_Sprite(Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
          Color a_renderColor, bool a_collidable, String a_SpriteName)
-         : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+         : base (a_game, a_textureFileNames[0], a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_AnimatedTextureNames = a_textureFileNames;
+         m_AnimatedSprites = new Texture2D[m_AnimatedTextureNames.Length];
          m_SpriteAnimationSequences = a_SpriteAnimationSequence;
          m_PreviousMovement = Vector2.Zero;
          m_MovementSpeed = Vector2.Zero;
@@ -416,15 +417,15 @@ namespace GrandTheftCandy
 
       public override void Draw (GameTime gameTime)
       {
+         SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
+
+         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+         sb.Draw (m_AnimatedSprites[(int)m_CurrentAnimation], m_spritePosition, m_CurrentDrawRectangle, m_spriteRenderColor, 0f, m_spriteCenter,
+            1.0f, SpriteEffects.None, 0f);
+         sb.End ();
+
          if (m_DrawThisFrame)
          {
-            SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
-
-            sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
-            sb.Draw (m_AnimatedSprites[(int)m_CurrentAnimation], m_spritePosition, m_CurrentDrawRectangle, m_spriteRenderColor, 0f, m_spriteCenter,
-               1.0f, SpriteEffects.None, 0f);
-            sb.End ();
-
             // If the animation sequence is a movement one, incriment to the next animation sequence and move the draw rectangle.
             if ((int)m_CurrentAnimation % 2 != 0)
             {
@@ -436,14 +437,12 @@ namespace GrandTheftCandy
                else
                {
                   m_CurrentAnimationSequence = 0;
-                  m_CurrentDrawRectangle.Location = new Point (0, 0);
+                  m_CurrentDrawRectangle.X = 0;
                }
             }
          }
 
          m_DrawThisFrame = !m_DrawThisFrame;
-
-         //base.Draw (gameTime);
       }
 
       #endregion
@@ -459,7 +458,7 @@ namespace GrandTheftCandy
       protected void calculateCurrentMovingAnimation()
       {
          // If the sprite is moving more horizontally than vertically (or equal)
-         if (m_CurrentMovement.X >= m_CurrentMovement.Y)
+         if (Math.Abs(m_CurrentMovement.X) >= Math.Abs(m_CurrentMovement.Y))
          {
             // If the sprite is moving Left
             if (m_CurrentMovement.X < 0)
@@ -507,12 +506,14 @@ namespace GrandTheftCandy
          {
             m_CurrentAnimation = spriteAnimationSequence.UpStill;
          }
+
+         m_CurrentDrawRectangle.X = 0;
       }
 
       #endregion
    } // End Animated_Sprite Class.
 
-   public class Player_Controlled_Sprite : Sprite_Base_Class
+   public class Player_Controlled_Sprite : Animated_Sprite
    {
       #region Member Variables
 
@@ -523,9 +524,9 @@ namespace GrandTheftCandy
 
       #region Constructors
 
-      public Player_Controlled_Sprite (Game a_game, String a_textureFileName, Vector2 a_startingPosition, 
+      public Player_Controlled_Sprite (Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
          Color a_renderColor, bool a_collidable, String a_SpriteName)
-         : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+         : base(a_game, a_textureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_MovementAllowed = false;
          m_CandyCount = 0;
@@ -586,12 +587,14 @@ namespace GrandTheftCandy
          if (m_MovementAllowed)
          {
             KeyboardState keyboardInput = Keyboard.GetState ();
+            Vector2 tempMovement = Vector2.Zero;
 
             #region Move Down
             if (keyboardInput.IsKeyDown (Keys.S) || keyboardInput.IsKeyDown (Keys.Down))
             {
                if (m_spritePosition.Y < (this.GraphicsDevice.Viewport.Height - 5))
                {
+                  tempMovement.Y = 5;
                   m_spritePosition.Y += 5;
                   this.DrawOrder++;
                   Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
@@ -611,8 +614,9 @@ namespace GrandTheftCandy
             #region Move Left
             if (keyboardInput.IsKeyDown (Keys.A) || keyboardInput.IsKeyDown (Keys.Left))
             {
-               if (m_spritePosition.X - (m_textureImage.Width / 2) > 0)
+               if (m_spritePosition.X - (this.boundingBox.Width / 2) > 0)
                {
+                  tempMovement.X = -5;
                   m_spritePosition.X -= 5;
                   Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
                   this.Game.Components.CopyTo (spriteList, 0);
@@ -641,6 +645,7 @@ namespace GrandTheftCandy
             {
                if (m_spritePosition.X < 3000)
                {
+                  tempMovement.X = 5;
                   m_spritePosition.X += 5;
                   Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
                   this.Game.Components.CopyTo (spriteList, 0);
@@ -667,6 +672,7 @@ namespace GrandTheftCandy
             #region Move Up
             if ((keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up)) && this.spritePosition.Y > 190)
             {
+               tempMovement.Y = -5;
                m_spritePosition.Y -= 5;
                this.DrawOrder--;
                Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
@@ -681,6 +687,8 @@ namespace GrandTheftCandy
                }
             }
             #endregion
+
+            m_CurrentMovement = tempMovement;
          }
 
          base.Update(gameTime);

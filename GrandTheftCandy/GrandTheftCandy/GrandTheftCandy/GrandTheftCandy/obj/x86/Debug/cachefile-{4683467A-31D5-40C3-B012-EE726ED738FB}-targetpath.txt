@@ -25,3 +25,7 @@ Content\Resources\Images\stroller1.xnb
 Content\Resources\Images\stroller2.xnb
 Content\Resources\Images\winner.xnb
 Content\SpriteFont1.xnb
+Content\Resources\Images\mainSpriteDown.xnb
+Content\Resources\Images\mainSpriteLeft.xnb
+Content\Resources\Images\mainSpriteRight.xnb
+Content\Resources\Images\mainSpriteUp.xnb

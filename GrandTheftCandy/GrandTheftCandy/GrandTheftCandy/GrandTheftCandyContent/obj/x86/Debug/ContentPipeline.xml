@@ -236,6 +236,42 @@
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
       <Time>2014-10-16T13:19:09.8492693-06:00</Time>
     </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteDown.png</Source>
+      <Name>Resources\Images\mainSpriteDown</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteDown.xnb</Output>
+      <Time>2014-10-09T13:24:43.2494313-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteLeft.png</Source>
+      <Name>Resources\Images\mainSpriteLeft</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteLeft.xnb</Output>
+      <Time>2014-10-09T13:24:43.2544288-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteRight.png</Source>
+      <Name>Resources\Images\mainSpriteRight</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteRight.xnb</Output>
+      <Time>2014-10-09T13:24:43.2594326-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteUp.png</Source>
+      <Name>Resources\Images\mainSpriteUp</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteUp.xnb</Output>
+      <Time>2014-10-09T13:24:43.2664306-06:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>

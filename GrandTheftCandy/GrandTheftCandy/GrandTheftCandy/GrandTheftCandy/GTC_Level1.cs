@@ -89,21 +89,14 @@ namespace GrandTheftCandy
       {
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
          candyStoreEntrance = new Vector2 ( 2640, 200);
-         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
-         string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
 
          #region Sprite Creation
 
-         player = new Player_Controlled_Sprite (this, @"Resources\Images\mainSpriteLeftStill", screenCenter, Color.White, true, "Player");
-         mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother0", true);
-         mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 250), Color.White, true, "Mother1", true);
-         mothers[2] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2250, 400), Color.White, true, "Mother2", true);
-         guards[0] = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard0", false);
-         guards[1] = new NPC_Base_Class (this, GuardSprite, new Vector2 (2000, 500), Color.White, true, "Guard1", false);
+         initializePlayer ();
+         initializeMothers ();
+         initializeGuards ();
+         initializeMall ();
 
-         candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
-         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 400), false, 0, "Mall Floor");
-         mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
          gameBar = new Game_Bar (this, @"Resources\Images\gamebar", new Vector2 (400, 300), Color.White, "Game bar");
          candyEntrance.Visible = false;
          gameBar.Visible = false;
@@ -232,37 +225,36 @@ namespace GrandTheftCandy
 
       #region Functions
 
-      /// <summary>
-      /// Draws either a vertical line or horizontal line using a starting point and an ending point.
-      /// </summary>
-      /// <param name="a_lineTexture"></param>
-      /// <param name="spriteBatch"></param>
-      /// <param name="a_startingPosition"></param>
-      /// <param name="a_endingPosition"></param>
-      /// <param name="a_drawVertical"></param>
-      public static void DrawLine(Texture2D a_lineTexture, SpriteBatch spriteBatch, 
-         Vector2 a_startingPosition, Vector2 a_endingPosition, bool a_drawVertical)
+      public void initializePlayer ()
       {
-         if ( a_drawVertical )
-         {
-            spriteBatch.Begin();
-            while ( a_startingPosition.Y < a_endingPosition.Y )
-            {
-               spriteBatch.Draw(a_lineTexture, a_startingPosition, Color.Black);
-               a_startingPosition.Y++;
-            }
-            spriteBatch.End();
-         }
-         else
-         {
-            spriteBatch.Begin ();
-            while ( a_startingPosition.X < a_endingPosition.X )
-            {
-               spriteBatch.Draw ( a_lineTexture, a_startingPosition, Color.Black );
-               a_startingPosition.X++;
-            }
-            spriteBatch.End ();
-         }
+         string[] playerSprites = new string[8]{@"Resources\Images\mainSpriteDownStill", @"Resources\Images\mainSpriteDown",
+            @"Resources\Images\mainSpriteLeftStill", @"Resources\Images\mainSpriteLeft",
+            @"Resources\Images\mainSpriteRightStill", @"Resources\Images\mainSpriteRight", 
+            @"Resources\Images\mainSpriteUpStill", @"Resources\Images\mainSpriteUp"};
+         int[] playerSpriteSequences = new int[8] { 1, 7, 1, 7, 1, 7, 1, 7 };
+         player = new Player_Controlled_Sprite (this, playerSprites, playerSpriteSequences, screenCenter, Color.White, true, "Player");
+      }
+
+      public void initializeMothers ()
+      {
+         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
+         mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother0", true);
+         mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 250), Color.White, true, "Mother1", true);
+         mothers[2] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2250, 400), Color.White, true, "Mother2", true);
+      }
+
+      public void initializeGuards ()
+      {
+         string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
+         guards[0] = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard0", false);
+         guards[1] = new NPC_Base_Class (this, GuardSprite, new Vector2 (2000, 500), Color.White, true, "Guard1", false);
+      }
+
+      public void initializeMall ()
+      {
+         candyEntrance = new Sprite_Base_Class (this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
+         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2 (1500, 400), false, 0, "Mall Floor");
+         mallWall = new Sprite_Base_Class (this, @"Resources\Images\mallbg", new Vector2 (1500, 100), true, 1, "Mall Wall");
       }
 
       #endregion
