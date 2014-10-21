@@ -6,7 +6,6 @@ Content\Resources\Images\mainSpriteRightStill.xnb
 Content\Resources\Images\mainSpriteUpStill.xnb
 Content\Resources\Images\bluesquare.xnb
 Content\Resources\Images\candiesSprite.xnb
-Content\Resources\Images\candysprite0.xnb
 Content\Resources\Images\Circle.xnb
 Content\Resources\Images\ConceptArtCandyGrandTheft.xnb
 Content\Resources\Images\floorbg.xnb

@@ -587,26 +587,17 @@ namespace GrandTheftCandy
          if (m_MovementAllowed)
          {
             KeyboardState keyboardInput = Keyboard.GetState ();
+
+            #region Player Movement
+
             Vector2 tempMovement = Vector2.Zero;
 
             #region Move Down
             if (keyboardInput.IsKeyDown (Keys.S) || keyboardInput.IsKeyDown (Keys.Down))
             {
-               if (m_spritePosition.Y < (this.GraphicsDevice.Viewport.Height - 5))
+               if (m_spritePosition.Y < 650)
                {
                   tempMovement.Y = 5;
-                  m_spritePosition.Y += 5;
-                  this.DrawOrder++;
-                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-                  this.Game.Components.CopyTo (spriteList, 0);
-                  for (int i = 0; i < spriteList.Length; i++)
-                  {
-                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                     {
-                        m_spritePosition.Y -= 5;
-                        this.DrawOrder--;
-                     }
-                  }
                }
             }
             #endregion
@@ -617,25 +608,6 @@ namespace GrandTheftCandy
                if (m_spritePosition.X - (this.boundingBox.Width / 2) > 0)
                {
                   tempMovement.X = -5;
-                  m_spritePosition.X -= 5;
-                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-                  this.Game.Components.CopyTo (spriteList, 0);
-                  for (int i = 0; i < spriteList.Length; i++)
-                  {
-                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                     {
-                        m_spritePosition.X += 5;
-                     }
-
-                     if (m_spritePosition.X > 400 && m_spritePosition.X < 2600)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (400 - m_spritePosition.X, 0, 0);
-                     }
-                     else if (m_spritePosition.X < 400)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (0, 0, 0);
-                     }
-                  }
                }
             }
             #endregion
@@ -646,25 +618,6 @@ namespace GrandTheftCandy
                if (m_spritePosition.X < 3000)
                {
                   tempMovement.X = 5;
-                  m_spritePosition.X += 5;
-                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-                  this.Game.Components.CopyTo (spriteList, 0);
-                  for (int i = 0; i < spriteList.Length; i++)
-                  {
-                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                     {
-                        m_spritePosition.X -= 5;
-                     }
-
-                     if (m_spritePosition.X < 2600 && m_spritePosition.X > 400)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (400 - m_spritePosition.X, 0, 0);
-                     }
-                     else if (m_spritePosition.X > 2600)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (-2200, 0, 0);
-                     }
-                  }
                }
             }
             #endregion
@@ -673,19 +626,63 @@ namespace GrandTheftCandy
             if ((keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up)) && this.spritePosition.Y > 190)
             {
                tempMovement.Y = -5;
-               m_spritePosition.Y -= 5;
-               this.DrawOrder--;
-               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-               this.Game.Components.CopyTo (spriteList, 0);
-               for (int i = 0; i < spriteList.Length; i++)
-               {
-                  if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                  {
-                     m_spritePosition.Y += 5;
-                     this.DrawOrder++;
-                  }
-               }
             }
+            #endregion
+
+            // Move the player.
+            this.m_spritePosition.X += tempMovement.X;
+            this.m_spritePosition.Y += tempMovement.Y;
+            this.calculateDrawOrder ();
+
+            // If the player Collides with anything, undo the mvoement.
+            if (playerCollidesWithAnything ())
+            {
+               this.spritePosition -= tempMovement;
+               this.calculateDrawOrder ();
+            }
+
+            #endregion
+
+            #region Camera Movement
+
+            Vector2 cameraTranslation = Vector2.Zero;
+
+            #region Camera X Translation
+
+            if (m_spritePosition.X > 400 && m_spritePosition.X < 2600)
+            {
+               cameraTranslation.X = 400 - m_spritePosition.X;
+            }
+            else if (m_spritePosition.X < 400)
+            {
+               cameraTranslation.X = 0;
+            }
+            else if (m_spritePosition.X > 2600)
+            {
+               cameraTranslation.X = -2200;
+            }
+
+            #endregion
+
+            #region Camera Y Translation
+
+            if (m_spritePosition.Y > 300 && m_spritePosition.Y < 700)
+            {
+               cameraTranslation.Y = 300 - m_spritePosition.Y;
+            }
+            else if (m_spritePosition.Y < 300)
+            {
+               cameraTranslation.Y = 0;
+            }
+            else if (m_spritePosition.Y > 700)
+            {
+               cameraTranslation.Y = -300;
+            }
+
+            #endregion
+
+            ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (cameraTranslation.X, cameraTranslation.Y, 0);
+
             #endregion
 
             m_CurrentMovement = tempMovement;
@@ -702,6 +699,20 @@ namespace GrandTheftCandy
       #endregion
 
       #region Functions
+
+      private bool playerCollidesWithAnything ()
+      {
+         Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+         this.Game.Components.CopyTo (spriteList, 0);
+         for (int i = 0; i < spriteList.Length; i++)
+         {
+            if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
 
       #endregion
 

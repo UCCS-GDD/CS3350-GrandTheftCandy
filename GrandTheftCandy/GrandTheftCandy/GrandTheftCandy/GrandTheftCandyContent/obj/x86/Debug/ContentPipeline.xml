@@ -66,15 +66,6 @@
       <Time>2014-10-09T13:25:19.500846-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\candysprite0.png</Source>
-      <Name>Resources\Images\candysprite0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\candysprite0.xnb</Output>
-      <Time>2014-10-04T10:56:41.2659784-06:00</Time>
-    </Item>
-    <Item>
       <Source>Resources\Images\Circle.png</Source>
       <Name>Resources\Images\Circle</Name>
       <Importer>TextureImporter</Importer>
