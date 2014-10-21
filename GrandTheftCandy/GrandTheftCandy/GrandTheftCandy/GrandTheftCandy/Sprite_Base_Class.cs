@@ -19,6 +19,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GrandTheftCandy
 {
+   public enum spriteAnimationSequence
+   {DownStill, DownMoving, LeftStill, LeftMoving, RightStill, RightMoving, UpStill, UpMoving};
+
    public class Sprite_Base_Class : DrawableGameComponent
    {
       #region Member Variables
@@ -303,7 +306,11 @@ namespace GrandTheftCandy
       /// <summary>
       /// An intiger array for storing when a sprite animation ends.
       /// </summary>
-      private int[] m_SpriteAnimationSequence;
+      private int[] m_SpriteAnimationSequences;
+      private spriteAnimationSequence currentAnimation;
+      private Vector2 movementSpeed;
+      private Vector2 previousMovement;
+      private Vector2 currentMovement;
 
       #endregion
 
@@ -314,7 +321,7 @@ namespace GrandTheftCandy
          : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_AnimatedTextureNames = a_textureFileNames;
-         m_SpriteAnimationSequence = a_SpriteAnimationSequence;
+         m_SpriteAnimationSequences = a_SpriteAnimationSequence;
       }
 
       #endregion
