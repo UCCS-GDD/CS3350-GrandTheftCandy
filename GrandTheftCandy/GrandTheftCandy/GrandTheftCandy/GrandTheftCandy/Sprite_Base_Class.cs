@@ -296,9 +296,7 @@ namespace GrandTheftCandy
 
    } // End Sprite_Base_Class.
 
-   // TODO: Finish making sure the draw animation is code is done.
-   // TODO: Finish update code to determine which animation sequence to
-   //    use based on current and previous movement.
+   // TODO: Hook Player Class into Animated Sprite class and ensure that animation works.
    /// <summary>
    /// When providing the file names for the animated textures,
    /// provide them in the same order as the enum spriteAnimationSequence.
@@ -311,13 +309,13 @@ namespace GrandTheftCandy
       private spriteAnimationSequence m_CurrentAnimation;
       private int m_CurrentAnimationSequence;
       private Rectangle m_CurrentDrawRectangle;
-      private Vector2 m_MovementSpeed;
+      protected Vector2 m_MovementSpeed;
       private Vector2 m_PreviousMovement;
-      private Vector2 m_CurrentMovement;
+      protected Vector2 m_CurrentMovement;
       // String names for each animation.
       private String[] m_AnimatedTextureNames;
       // The texture array containing all of the animations
-      private Texture2D[] m_AnimatedSprites;
+      protected Texture2D[] m_AnimatedSprites;
       private int[] m_SpriteAnimationSequences;
 
       #endregion
@@ -340,6 +338,30 @@ namespace GrandTheftCandy
       #endregion
 
       #region Getters and Setters
+
+      public Vector2 movementSpeed
+      {
+         get
+         {
+            return m_MovementSpeed;
+         }
+         set
+         {
+            m_MovementSpeed = value;
+         }
+      }
+
+      public Vector2 currentMovement
+      {
+         get
+         {
+            return m_CurrentMovement;
+         }
+         set
+         {
+            m_CurrentMovement = value;
+         }
+      }
 
       #endregion
 
@@ -365,6 +387,30 @@ namespace GrandTheftCandy
 
       public override void Update (GameTime gameTime)
       {
+         #region Sprite Sequence Update
+
+         // Case 1: Previously still, now moving
+         if ((m_PreviousMovement == Vector2.Zero) && (m_CurrentMovement != Vector2.Zero))
+         {
+            calculateCurrentMovingAnimation ();
+         }
+
+         // Case 2: Previously moving, now still
+         else if ((m_CurrentMovement == Vector2.Zero) && (m_PreviousMovement != Vector2.Zero))
+         {
+            calculateCurrentStillAnimation ();
+         }
+         // Case 3: Previously moving, Still moving (Make sure the general direction is the same)
+         else if ((m_CurrentMovement != Vector2.Zero) && (m_PreviousMovement != Vector2.Zero))
+         {
+            calculateCurrentMovingAnimation ();
+         }
+
+         // Update the previous movement for the next cycle.
+         m_PreviousMovement = m_CurrentMovement;
+
+         #endregion
+
          base.Update (gameTime);
       }
 
@@ -379,30 +425,89 @@ namespace GrandTheftCandy
                1.0f, SpriteEffects.None, 0f);
             sb.End ();
 
-            // If the animation sequence is a movement one.
+            // If the animation sequence is a movement one, incriment to the next animation sequence and move the draw rectangle.
             if ((int)m_CurrentAnimation % 2 != 0)
             {
                if (m_CurrentAnimationSequence < m_SpriteAnimationSequences[(int)m_CurrentAnimation])
                {
                   m_CurrentAnimationSequence++;
+                  m_CurrentDrawRectangle.Offset (m_AnimatedSprites[0].Width, 0);
                }
                else
                {
                   m_CurrentAnimationSequence = 0;
+                  m_CurrentDrawRectangle.Location = new Point (0, 0);
                }
             }
          }
 
-         
-
          m_DrawThisFrame = !m_DrawThisFrame;
 
-         base.Draw (gameTime);
+         //base.Draw (gameTime);
       }
 
       #endregion
 
       #region Functions
+
+      public void setMotion (Vector2 a_MovementSpeed, Vector2 a_CurrentMovement)
+      {
+         m_MovementSpeed = a_MovementSpeed;
+         m_CurrentMovement = a_CurrentMovement;
+      }
+
+      protected void calculateCurrentMovingAnimation()
+      {
+         // If the sprite is moving more horizontally than vertically (or equal)
+         if (m_CurrentMovement.X >= m_CurrentMovement.Y)
+         {
+            // If the sprite is moving Left
+            if (m_CurrentMovement.X < 0)
+            {
+               m_CurrentAnimation = spriteAnimationSequence.LeftMoving;
+            }
+            // Else if the sprite is moving Right
+            else
+            {
+               m_CurrentAnimation = spriteAnimationSequence.RightMoving;
+            }
+         }
+         // If the sprite is moving more vertically than horizontally
+         else
+         {
+            // If the sprite is moving Up
+            if (m_CurrentMovement.Y < 0)
+            {
+               m_CurrentAnimation = spriteAnimationSequence.UpMoving;
+            }
+            // Else If the sprite is moving Down
+            else
+            {
+               m_CurrentAnimation = spriteAnimationSequence.DownMoving;
+            }
+         }
+      }
+
+      protected void calculateCurrentStillAnimation ()
+      {
+         // If the sprite was previously moving down.
+         if (m_CurrentAnimation == spriteAnimationSequence.DownMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.DownStill;
+         }
+         else if (m_CurrentAnimation == spriteAnimationSequence.LeftMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.LeftStill;
+         }
+         else if (m_CurrentAnimation == spriteAnimationSequence.RightMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.RightStill;
+         }
+         else if (m_CurrentAnimation == spriteAnimationSequence.UpMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.UpStill;
+         }
+      }
 
       #endregion
    } // End Animated_Sprite Class.
