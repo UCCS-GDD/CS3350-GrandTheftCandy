@@ -296,21 +296,29 @@ namespace GrandTheftCandy
 
    } // End Sprite_Base_Class.
 
-   // TODO: Finish animation class and make the NPC class inherit from it.
+   // TODO: Finish making sure the draw animation is code is done.
+   // TODO: Finish update code to determine which animation sequence to
+   //    use based on current and previous movement.
+   /// <summary>
+   /// When providing the file names for the animated textures,
+   /// provide them in the same order as the enum spriteAnimationSequence.
+   /// </summary>
    class Animated_Sprite : Sprite_Base_Class
    {
       #region Member Variables
 
+      private bool m_DrawThisFrame;
+      private spriteAnimationSequence m_CurrentAnimation;
+      private int m_CurrentAnimationSequence;
+      private Rectangle m_CurrentDrawRectangle;
+      private Vector2 m_MovementSpeed;
+      private Vector2 m_PreviousMovement;
+      private Vector2 m_CurrentMovement;
+      // String names for each animation.
       private String[] m_AnimatedTextureNames;
+      // The texture array containing all of the animations
       private Texture2D[] m_AnimatedSprites;
-      /// <summary>
-      /// An intiger array for storing when a sprite animation ends.
-      /// </summary>
       private int[] m_SpriteAnimationSequences;
-      private spriteAnimationSequence currentAnimation;
-      private Vector2 movementSpeed;
-      private Vector2 previousMovement;
-      private Vector2 currentMovement;
 
       #endregion
 
@@ -322,6 +330,11 @@ namespace GrandTheftCandy
       {
          m_AnimatedTextureNames = a_textureFileNames;
          m_SpriteAnimationSequences = a_SpriteAnimationSequence;
+         m_PreviousMovement = Vector2.Zero;
+         m_MovementSpeed = Vector2.Zero;
+         m_CurrentAnimation = spriteAnimationSequence.LeftStill;
+         m_CurrentAnimationSequence = 0;
+         m_DrawThisFrame = true;
       }
 
       #endregion
@@ -339,6 +352,9 @@ namespace GrandTheftCandy
             m_AnimatedSprites[i] = Game.Content.Load<Texture2D> (m_AnimatedTextureNames[i]);
          }
 
+         // Initialize the draw rectangle with the diminsions of a "still" sprite.
+         m_CurrentDrawRectangle = new Rectangle (0, 0, m_AnimatedSprites[0].Width, m_AnimatedSprites[0].Height);
+
          base.LoadContent ();
       }
 
@@ -354,12 +370,32 @@ namespace GrandTheftCandy
 
       public override void Draw (GameTime gameTime)
       {
-         //SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
+         if (m_DrawThisFrame)
+         {
+            SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
 
-         //sb.Begin ();
-         //sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-         //   1.0f, SpriteEffects.None, 0f);
-         //sb.End ();
+            sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+            sb.Draw (m_AnimatedSprites[(int)m_CurrentAnimation], m_spritePosition, m_CurrentDrawRectangle, m_spriteRenderColor, 0f, m_spriteCenter,
+               1.0f, SpriteEffects.None, 0f);
+            sb.End ();
+
+            // If the animation sequence is a movement one.
+            if ((int)m_CurrentAnimation % 2 != 0)
+            {
+               if (m_CurrentAnimationSequence < m_SpriteAnimationSequences[(int)m_CurrentAnimation])
+               {
+                  m_CurrentAnimationSequence++;
+               }
+               else
+               {
+                  m_CurrentAnimationSequence = 0;
+               }
+            }
+         }
+
+         
+
+         m_DrawThisFrame = !m_DrawThisFrame;
 
          base.Draw (gameTime);
       }

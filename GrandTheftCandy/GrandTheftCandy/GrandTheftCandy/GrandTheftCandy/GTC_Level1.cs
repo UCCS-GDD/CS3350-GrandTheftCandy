@@ -44,6 +44,7 @@ namespace GrandTheftCandy
       GraphicsDeviceManager graphics;
       public SpriteBatch spriteBatch;
       public Matrix cameraPosition;
+      public bool gameNotPaused;
 
       public Player_Controlled_Sprite player;
       NPC_Base_Class[] mothers;
@@ -72,6 +73,7 @@ namespace GrandTheftCandy
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
          mothers = new NPC_Base_Class[3];
          guards = new NPC_Base_Class[2];
+         gameNotPaused = true;
       }
 
       #endregion
