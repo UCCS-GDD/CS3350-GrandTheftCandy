@@ -49,6 +49,7 @@ namespace GrandTheftCandy
       public Player_Controlled_Sprite player;
       NPC_Base_Class[] mothers;
       NPC_Base_Class[] guards;
+      Sprite_Base_Class[] folliage;
       Sprite_Base_Class candyEntrance;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
@@ -73,6 +74,7 @@ namespace GrandTheftCandy
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
          mothers = new NPC_Base_Class[3];
          guards = new NPC_Base_Class[2];
+         folliage = new Sprite_Base_Class[5];
          gameNotPaused = true;
       }
 
@@ -96,6 +98,7 @@ namespace GrandTheftCandy
          initializeMothers ();
          initializeGuards ();
          initializeMall ();
+         initializeFolliage ();
 
          gameBar = new Game_Bar (this, @"Resources\Images\gamebar", new Vector2 (400, 300), Color.White, "Game bar");
          candyEntrance.Visible = false;
@@ -174,7 +177,7 @@ namespace GrandTheftCandy
          }
 
          // Win condition
-         if (player.isWithinSpriteBoundry(candyEntrance))
+         if (player.isWithinSpriteBoundry(candyEntrance) && player.candyCount>0)
          {
             winScreen.Visible = true;
             player.movementAllowed = false;
@@ -255,6 +258,15 @@ namespace GrandTheftCandy
          candyEntrance = new Sprite_Base_Class (this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
          mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2 (1500, 400), false, 0, "Mall Floor");
          mallWall = new Sprite_Base_Class (this, @"Resources\Images\mallbg", new Vector2 (1500, 100), true, 1, "Mall Wall");
+      }
+
+      public void initializeFolliage ()
+      {
+         folliage[0] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (500, 450), Color.Green, true, "Bush1");
+         folliage[1] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (2600, 600), Color.Green, true, "Bush2");
+         folliage[2] = new Sprite_Base_Class (this, @"Resources\Images\hidingTrash", new Vector2 (750, 200), Color.Green, true, "Trash Can1");
+         folliage[3] = new Sprite_Base_Class (this, @"Resources\Images\hidingtrash", new Vector2 (1800, 200), Color.Green, true, "Trash Can2");
+         folliage[4] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1600, 400), Color.Green, true, "Tree1");
       }
 
       #endregion

@@ -637,7 +637,8 @@ namespace GrandTheftCandy
             // If the player Collides with anything, undo the mvoement.
             if (playerCollidesWithAnything ())
             {
-               this.spritePosition -= tempMovement;
+               this.m_spritePosition.X -= tempMovement.X;
+               this.m_spritePosition.Y -= tempMovement.Y;
                this.calculateDrawOrder ();
             }
 
@@ -649,34 +650,34 @@ namespace GrandTheftCandy
 
             #region Camera X Translation
 
-            if (m_spritePosition.X > 400 && m_spritePosition.X < 2600)
-            {
-               cameraTranslation.X = 400 - m_spritePosition.X;
-            }
-            else if (m_spritePosition.X < 400)
+            if (m_spritePosition.X <= 400)
             {
                cameraTranslation.X = 0;
             }
-            else if (m_spritePosition.X > 2600)
+            else if (m_spritePosition.X >= 2600)
             {
                cameraTranslation.X = -2200;
+            }
+            else
+            {
+               cameraTranslation.X = 400 - m_spritePosition.X;
             }
 
             #endregion
 
             #region Camera Y Translation
 
-            if (m_spritePosition.Y > 300 && m_spritePosition.Y < 700)
-            {
-               cameraTranslation.Y = 300 - m_spritePosition.Y;
-            }
-            else if (m_spritePosition.Y < 300)
+            if (m_spritePosition.Y <= 300)
             {
                cameraTranslation.Y = 0;
             }
-            else if (m_spritePosition.Y > 700)
+            else if (m_spritePosition.Y >= 700)
             {
                cameraTranslation.Y = -300;
+            }
+            else
+            {
+               cameraTranslation.Y = 300 - m_spritePosition.Y;
             }
 
             #endregion
