@@ -45,6 +45,8 @@ namespace GrandTheftCandy
       public SpriteBatch spriteBatch;
       public Matrix cameraPosition;
       public bool gameNotPaused;
+      private bool ableToPause;
+      private int pauseTimer;
 
       public Player_Controlled_Sprite player;
       NPC_Base_Class[] mothers;
@@ -76,6 +78,8 @@ namespace GrandTheftCandy
          guards = new NPC_Base_Class[2];
          folliage = new Sprite_Base_Class[5];
          gameNotPaused = true;
+         ableToPause = true;
+         pauseTimer = 0;
       }
 
       #endregion
@@ -166,17 +170,20 @@ namespace GrandTheftCandy
       /// <param name="gameTime">Provides a snapshot of timing values.</param>
       protected override void Update(GameTime gameTime)
       {
-         // Allows the game to exit.
          KeyboardState keyboardState = Keyboard.GetState ();
 
-         //Exits the game
+         #region Game Exit
+
          if (keyboardState.IsKeyDown (Keys.Escape) ||
             GamePad.GetState (PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
          {
             this.Exit ();
          }
 
-         // Win condition
+         #endregion
+
+         #region Win Condition
+
          if (player.isWithinSpriteBoundry(candyEntrance) && player.candyCount>0)
          {
             winScreen.Visible = true;
@@ -184,7 +191,10 @@ namespace GrandTheftCandy
             cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
          }
 
-         // Stealing Candy
+         #endregion
+
+         #region Candy Stealing
+
          for (int i = 0; i < mothers.Length; i++)
          {
             if ((player.collidesWithAbove (mothers[i]) || player.collidesWithBelow (mothers[i])) && mothers[i].hasCandy)
@@ -199,7 +209,10 @@ namespace GrandTheftCandy
             }
          }
 
-         // End condition (Player gets caught)
+         #endregion
+
+         #region Getting Caught (Losing)
+
          for (int i = 0; i < guards.Length; i++)
          {
             if ((player.collides (guards[i]) || player.collidesHorizontally (guards[i])) && guards[i].followingPlayer)
@@ -209,6 +222,29 @@ namespace GrandTheftCandy
                gameOver.Visible = true;
             }
          }
+
+         #endregion
+
+         #region Game Pause
+
+         if (keyboardState.IsKeyDown (Keys.P))
+         {
+            gameNotPaused = !gameNotPaused;
+            ableToPause = false;
+            pauseTimer = 30;
+         }
+
+         if (!ableToPause && pauseTimer > 0)
+         {
+            pauseTimer--;
+         }
+
+         if (pauseTimer < 1 && !ableToPause)
+         {
+            ableToPause = true;
+         }
+
+         #endregion
 
          base.Update(gameTime);
       }
