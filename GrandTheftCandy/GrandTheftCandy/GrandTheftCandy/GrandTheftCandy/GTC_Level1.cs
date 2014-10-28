@@ -184,7 +184,7 @@ namespace GrandTheftCandy
 
          #region Win Condition
 
-         if (player.isWithinSpriteBoundry(candyEntrance) && player.candyCount>0)
+         if (player.isWithinSpriteBoundry(candyEntrance) && player.candyCount>4)
          {
             winScreen.Visible = true;
             player.movementAllowed = false;
@@ -229,9 +229,12 @@ namespace GrandTheftCandy
 
          if (keyboardState.IsKeyDown (Keys.P))
          {
-            gameNotPaused = !gameNotPaused;
-            ableToPause = false;
-            pauseTimer = 30;
+            if (ableToPause)
+            {
+               gameNotPaused = !(gameNotPaused);
+               ableToPause = false;
+               pauseTimer = 15;
+            }
          }
 
          if (!ableToPause && pauseTimer > 0)

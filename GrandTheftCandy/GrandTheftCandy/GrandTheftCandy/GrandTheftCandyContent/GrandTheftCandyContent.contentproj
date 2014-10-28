@@ -91,21 +91,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Resources\Images\floorbg.png">
-      <Name>floorbg</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Resources\Images\gamebar.png">
-      <Name>gamebar</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-    <Compile Include="Resources\Images\gamebar1.png">
-      <Name>gamebar1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Resources\Images\gameover0.png">
       <Name>gameover0</Name>
       <Importer>TextureImporter</Importer>
@@ -192,6 +177,20 @@
     </Compile>
     <Compile Include="Resources\Images\mainSpriteUp.png">
       <Name>mainSpriteUp</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Resources\Images\floorbg.png">
+      <Name>floorbg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Resources\Images\gamebar.png">
+      <Name>gamebar</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

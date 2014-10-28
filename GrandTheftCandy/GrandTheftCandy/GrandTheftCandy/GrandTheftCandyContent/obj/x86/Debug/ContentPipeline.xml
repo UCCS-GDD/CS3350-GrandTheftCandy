@@ -84,33 +84,6 @@
       <Time>2014-10-09T13:25:19.495915-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\floorbg.png</Source>
-      <Name>Resources\Images\floorbg</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\floorbg.xnb</Output>
-      <Time>2014-10-04T09:49:57.2095654-06:00</Time>
-    </Item>
-    <Item>
-      <Source>Resources\Images\gamebar.png</Source>
-      <Name>Resources\Images\gamebar</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar.xnb</Output>
-      <Time>2014-10-09T13:25:19.5028465-06:00</Time>
-    </Item>
-    <Item>
-      <Source>Resources\Images\gamebar1.png</Source>
-      <Name>Resources\Images\gamebar1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar1.xnb</Output>
-      <Time>2014-10-04T10:53:16.3183829-06:00</Time>
-    </Item>
-    <Item>
       <Source>Resources\Images\gameover0.png</Source>
       <Name>Resources\Images\gameover0</Name>
       <Importer>TextureImporter</Importer>
@@ -219,15 +192,6 @@
       <Time>2014-09-27T13:00:28.6752361-06:00</Time>
     </Item>
     <Item>
-      <Source>SpriteFont1.spritefont</Source>
-      <Name>SpriteFont1</Name>
-      <Importer>FontDescriptionImporter</Importer>
-      <Processor>FontDescriptionProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
-      <Time>2014-10-16T13:19:09.8492693-06:00</Time>
-    </Item>
-    <Item>
       <Source>Resources\Images\mainSpriteDown.png</Source>
       <Name>Resources\Images\mainSpriteDown</Name>
       <Importer>TextureImporter</Importer>
@@ -262,6 +226,33 @@
       <Options>None</Options>
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteUp.xnb</Output>
       <Time>2014-10-09T13:24:43.2664306-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\floorbg.png</Source>
+      <Name>Resources\Images\floorbg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\floorbg.xnb</Output>
+      <Time>2014-10-28T15:34:04.0220335-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\gamebar.png</Source>
+      <Name>Resources\Images\gamebar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar.xnb</Output>
+      <Time>2014-10-28T15:43:09.3453895-06:00</Time>
+    </Item>
+    <Item>
+      <Source>SpriteFont1.spritefont</Source>
+      <Name>SpriteFont1</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
+      <Time>2014-10-28T15:52:30.760955-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

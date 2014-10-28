@@ -629,7 +629,7 @@ namespace GrandTheftCandy
                #region Move Down
                if (keyboardInput.IsKeyDown (Keys.S) || keyboardInput.IsKeyDown (Keys.Down))
                {
-                  if (m_spritePosition.Y < 650)
+                  if (m_spritePosition.Y < 950)
                   {
                      tempMovement.Y = 5;
                   }
@@ -707,7 +707,7 @@ namespace GrandTheftCandy
                }
                else if (m_spritePosition.Y >= 700)
                {
-                  cameraTranslation.Y = -300;
+                  cameraTranslation.Y = -400;
                }
                else
                {
@@ -1109,7 +1109,6 @@ namespace GrandTheftCandy
    // TODO: Add a method to draw text
    public class Game_Bar : Sprite_Base_Class
    {
-      
       #region Member Variables
 
       private SpriteFont m_DrawableFont;
@@ -1122,7 +1121,7 @@ namespace GrandTheftCandy
       public Game_Bar (Game a_game, String a_textureFileName, Vector2 a_startingPosition, Color a_renderColor, String a_SpriteName)
          : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, false, a_SpriteName)
       {
-         m_CandyCounterPosition = new Vector2 (5, 10);
+         m_CandyCounterPosition = new Vector2 (110, 2);
          this.DrawOrder = 1000;
       }
 
