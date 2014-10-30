@@ -129,15 +129,6 @@
       <Time>2014-10-09T13:24:43.2474281-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\Line.png</Source>
-      <Name>Resources\Images\Line</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\Line.xnb</Output>
-      <Time>2014-09-27T13:00:28.6622346-06:00</Time>
-    </Item>
-    <Item>
       <Source>Resources\Images\mallbg.png</Source>
       <Name>Resources\Images\mallbg</Name>
       <Importer>TextureImporter</Importer>
@@ -262,6 +253,15 @@
       <Options>None</Options>
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\cottoncandy.xnb</Output>
       <Time>2014-10-28T15:24:25.0180124-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\kiosk0.png</Source>
+      <Name>Resources\Images\kiosk0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\kiosk0.xnb</Output>
+      <Time>2014-10-28T15:24:52.3299584-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>

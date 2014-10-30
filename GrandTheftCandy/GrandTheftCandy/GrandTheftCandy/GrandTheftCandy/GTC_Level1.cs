@@ -77,7 +77,7 @@ namespace GrandTheftCandy
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
          mothers = new NPC_Base_Class[5];
          guards = new NPC_Base_Class[2];
-         folliage = new Sprite_Base_Class[5];
+         folliage = new Sprite_Base_Class[8];
          gameNotPaused = true;
          ableToPause = true;
          pauseTimer = 0;
@@ -343,11 +343,14 @@ namespace GrandTheftCandy
 
       public void initializeFolliage ()
       {
-         folliage[0] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (500, 450), Color.Green, true, "Bush1");
-         folliage[1] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (2600, 600), Color.Green, true, "Bush2");
-         folliage[2] = new Sprite_Base_Class (this, @"Resources\Images\hidingTrash", new Vector2 (750, 200), Color.Green, true, "Trash Can1");
+         folliage[0] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (500, 450), Color.White, true, "Bush1");
+         folliage[1] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (2600, 500), Color.LightGreen, true, "Bush2");
+         folliage[2] = new Sprite_Base_Class (this, @"Resources\Images\hidingTrash", new Vector2 (750, 200), Color.Gray, true, "Trash Can1");
          folliage[3] = new Sprite_Base_Class (this, @"Resources\Images\hidingtrash", new Vector2 (1800, 200), Color.Green, true, "Trash Can2");
          folliage[4] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1600, 400), Color.Green, true, "Tree1");
+         folliage[5] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (1500, 650), Color.MediumSeaGreen, true, "Bush3");
+         folliage[6] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1000, 800), Color.LightGreen, true, "Tree2");
+         folliage[7] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (2250, 700), Color.Green, true, "Tree3");
       }
 
       #endregion

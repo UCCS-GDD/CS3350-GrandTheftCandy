@@ -13,7 +13,6 @@ Content\Resources\Images\guardsprite.xnb
 Content\Resources\Images\hidingBush.xnb
 Content\Resources\Images\hidingTrash.xnb
 Content\Resources\Images\hidingTree.xnb
-Content\Resources\Images\Line.xnb
 Content\Resources\Images\mallbg.xnb
 Content\Resources\Images\redsquare.xnb
 Content\Resources\Images\SplashScreen.xnb
@@ -28,3 +27,4 @@ Content\Resources\Images\floorbg.xnb
 Content\Resources\Images\gamebar.xnb
 Content\SpriteFont1.xnb
 Content\Resources\Images\cottoncandy.xnb
+Content\Resources\Images\kiosk0.xnb
