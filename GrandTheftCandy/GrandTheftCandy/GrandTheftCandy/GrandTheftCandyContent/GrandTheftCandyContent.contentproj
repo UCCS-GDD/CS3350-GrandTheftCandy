@@ -116,11 +116,6 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="Resources\Images\Line.png">
-      <Name>Line</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
     <Compile Include="Resources\Images\mallbg.png">
       <Name>mallbg</Name>
       <Importer>TextureImporter</Importer>
@@ -191,6 +186,13 @@
   <ItemGroup>
     <Compile Include="Resources\Images\gamebar.png">
       <Name>gamebar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Resources\Images\cottoncandy.png">
+      <Name>cottoncandy</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

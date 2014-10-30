@@ -27,3 +27,4 @@ Content\Resources\Images\mainSpriteUp.xnb
 Content\Resources\Images\floorbg.xnb
 Content\Resources\Images\gamebar.xnb
 Content\SpriteFont1.xnb
+Content\Resources\Images\cottoncandy.xnb

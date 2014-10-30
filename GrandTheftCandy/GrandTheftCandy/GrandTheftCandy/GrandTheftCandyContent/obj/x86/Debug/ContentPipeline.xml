@@ -254,6 +254,15 @@
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
       <Time>2014-10-28T15:52:30.760955-06:00</Time>
     </Item>
+    <Item>
+      <Source>Resources\Images\cottoncandy.png</Source>
+      <Name>Resources\Images\cottoncandy</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\cottoncandy.xnb</Output>
+      <Time>2014-10-28T15:24:25.0180124-06:00</Time>
+    </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
       <TargetPlatform>Windows</TargetPlatform>

@@ -550,6 +550,7 @@ namespace GrandTheftCandy
       #region Member Variables
 
       private bool m_MovementAllowed;
+      private bool m_IsHidden;
       private int m_CandyCount;
 
       #endregion
@@ -561,6 +562,7 @@ namespace GrandTheftCandy
          : base(a_game, a_textureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_MovementAllowed = false;
+         m_IsHidden = false;
          m_CandyCount = 0;
       }
 
@@ -577,6 +579,18 @@ namespace GrandTheftCandy
          set
          {
             m_MovementAllowed = value;
+         }
+      }
+
+      public bool isHidden
+      {
+         get
+         {
+            return m_IsHidden;
+         }
+         set
+         {
+            m_IsHidden = value;
          }
       }
 
@@ -858,6 +872,10 @@ namespace GrandTheftCandy
 
       public int detectionRadius
       {
+         get
+         {
+            return m_DetectionRadius;
+         }
          set
          {
             m_DetectionRadius = value;
@@ -942,11 +960,16 @@ namespace GrandTheftCandy
 
                bool withinDetectionRadius = (((GTC_Level1)this.Game).player.playerPosition - this.m_spritePosition).Length () < m_DetectionRadius;
 
-               if (withinDetectionRadius && !m_FollowingPlayer)
+               if (withinDetectionRadius && !m_FollowingPlayer && !((GTC_Level1)this.Game).player.isHidden)
                {
                   m_FollowingPlayer = true;
                }
                else if (!withinDetectionRadius && m_FollowingPlayer)
+               {
+                  m_FollowingPlayer = false;
+               }
+
+               if (((GTC_Level1)this.Game).player.isHidden)
                {
                   m_FollowingPlayer = false;
                }
@@ -1170,6 +1193,171 @@ namespace GrandTheftCandy
       #endregion
 
       #region Functions
+
+      #endregion
+   }
+
+   public class Cotton_Candy_Bomb : Sprite_Base_Class
+   {
+      #region Member Variables
+
+      protected bool m_IsActive;
+      protected bool m_AbleToActivate;
+      protected bool m_UpdateThisFrame;
+      protected int m_CooldownTimer;
+      protected int m_ActiveTimer;
+      protected int m_EffectRadius;
+      protected int m_CurrentDrawSequence;
+      protected Rectangle m_DrawRectangle;
+      protected Texture2D m_AnimatedTexture;
+
+      #endregion
+
+      #region Constructors
+
+      public Cotton_Candy_Bomb (Game a_game, String a_textureFileName, Vector2 a_startingPosition,
+         int a_EffectRadius, String a_SpriteName):
+         base(a_game, null, a_startingPosition, Color.White, false, a_SpriteName)
+      {
+         m_IsActive = false;
+         m_AbleToActivate = true;
+         m_UpdateThisFrame = true;
+         m_CooldownTimer = 0;
+         m_ActiveTimer = 0;
+         m_CurrentDrawSequence = 0;
+         m_EffectRadius = a_EffectRadius;
+         m_textureFileName = a_textureFileName;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      public bool isActive
+      {
+         get
+         {
+            return m_IsActive;
+         }
+      }
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent ()
+      {
+         m_AnimatedTexture = Game.Content.Load<Texture2D> (m_textureFileName);
+         m_SpriteHeight = 500;
+         m_SpriteWidth = 500;
+         m_spriteCenter = new Vector2 (m_SpriteWidth/2, m_SpriteHeight/2);
+         m_DrawRectangle = new Rectangle (0, 0, m_SpriteWidth, m_SpriteHeight);
+         this.DrawOrder = 500;
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            base.Update (gameTime);
+
+            #region Activate
+
+            if (!m_IsActive && m_AbleToActivate &&(((GTC_Level1)this.Game).player.candyCount > 0))
+            {
+               KeyboardState keyboardInput = Keyboard.GetState ();
+
+               if (keyboardInput.IsKeyDown (Keys.Space))
+               {
+                  this.Visible = true;
+                  m_IsActive = true;
+                  m_AbleToActivate = false;
+                  m_CooldownTimer = (15 * 30); //Half a minute
+                  m_ActiveTimer = 60;
+                  m_spritePosition = ((GTC_Level1)this.Game).player.playerPosition;
+                  ((GTC_Level1)this.Game).player.candyCount--;
+               }
+            }
+
+            #endregion
+
+            #region Update Timers
+
+            if (m_CooldownTimer > 0)
+            {
+               m_CooldownTimer--;
+
+               if (m_CooldownTimer < 1)
+               {
+                  m_AbleToActivate = true;
+               }
+            }
+
+            if (m_ActiveTimer > 0)
+            {
+               m_ActiveTimer--;
+
+               // If the bomb is no longer active.
+               if (m_ActiveTimer < 1)
+               {
+                  m_IsActive = false;
+                  this.Visible = false;
+               }
+            }
+
+            #endregion
+         }
+      }
+
+      public override void Draw (GameTime gameTime)
+      {
+
+         if (this.Visible)
+         {
+            SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
+
+            sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+            sb.Draw (m_AnimatedTexture, m_spritePosition, m_DrawRectangle, m_spriteRenderColor, 0f, m_spriteCenter,
+               1.0f, SpriteEffects.None, 0f);
+            sb.End ();
+
+            if (m_UpdateThisFrame)
+            {
+               m_CurrentDrawSequence++;
+               if (m_CurrentDrawSequence < 6)
+               {
+                  m_DrawRectangle.Offset (m_SpriteWidth, 0);
+               }
+               else
+               {
+                  m_CurrentDrawSequence = 0;
+                  m_DrawRectangle.X = 0;
+               }
+            }
+
+            m_UpdateThisFrame = !m_UpdateThisFrame;
+         }
+
+         base.Draw (gameTime);
+      }
+
+      #endregion
+
+      #region Functions
+
+      public bool isWithinDetectionRadius (Sprite_Base_Class a_sprite)
+      {
+         bool isWithinDistance;
+
+         isWithinDistance = (this.spritePosition - a_sprite.spritePosition).Length () < m_EffectRadius;
+
+         return isWithinDistance;
+      }
 
       #endregion
    }

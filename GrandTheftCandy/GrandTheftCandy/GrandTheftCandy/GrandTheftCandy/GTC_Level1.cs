@@ -57,6 +57,7 @@ namespace GrandTheftCandy
       Sprite_Base_Class gameOver;
       Sprite_Base_Class mallFloor;
       Sprite_Base_Class mallWall;
+      Cotton_Candy_Bomb cottonCandyBomb;
       public Game_Bar gameBar;
 
       Vector2 screenCenter;
@@ -74,7 +75,7 @@ namespace GrandTheftCandy
          this.IsMouseVisible = true;
          Content.RootDirectory = "Content";
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
-         mothers = new NPC_Base_Class[3];
+         mothers = new NPC_Base_Class[5];
          guards = new NPC_Base_Class[2];
          folliage = new Sprite_Base_Class[5];
          gameNotPaused = true;
@@ -116,18 +117,25 @@ namespace GrandTheftCandy
          winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
 
+         cottonCandyBomb = new Cotton_Candy_Bomb (this, @"Resources\Images\cottoncandy", screenCenter, 250, "Cotton Candy");
+         cottonCandyBomb.Visible = false;
+
          #endregion
 
          #region Set Guard behavior
 
          // Create a path of two waypoints for the guard to follow.
-         Vector2[] guard1Path = new Vector2[2];
-         guard1Path[0] = new Vector2 (500, 400);
-         guard1Path[1] = new Vector2 (1250, 400);
+         Vector2[] guard1Path = new Vector2[4];
+         guard1Path[0] = new Vector2 (300, 300);
+         guard1Path[1] = new Vector2 (300, 550);
+         guard1Path[2] = new Vector2 (750, 600);
+         guard1Path[3] = new Vector2 (1500, 400);
 
-         Vector2[] guard2Path = new Vector2[2];
-         guard2Path[0] = new Vector2 (1500, 500);
-         guard2Path[1] = new Vector2 (2500, 500);
+         Vector2[] guard2Path = new Vector2[4];
+         guard2Path[0] = new Vector2 (1500, 300);
+         guard2Path[1] = new Vector2 (2500, 300);
+         guard2Path[2] = new Vector2 (2500, 800);
+         guard2Path[3] = new Vector2 (1500, 800);
 
          // Enable the guard to move, set the path, speed, and detection radius.
          guards[0].moveable = guards[1].moveable = true;
@@ -138,9 +146,9 @@ namespace GrandTheftCandy
 
          #endregion
 
-         //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
-         //MediaPlayer.Play(backgroundSound);
-         //MediaPlayer.Volume = 50;
+         Song backgroundSound = Content.Load<Song> (@"Resources\Sounds\gameMusic");
+         MediaPlayer.Play (backgroundSound);
+         MediaPlayer.Volume = 50;
 
          base.Initialize();
         }
@@ -215,12 +223,44 @@ namespace GrandTheftCandy
 
          for (int i = 0; i < guards.Length; i++)
          {
-            if ((player.collides (guards[i]) || player.collidesHorizontally (guards[i])) && guards[i].followingPlayer)
+            if (((player.collides (guards[i]) || 
+               player.collidesHorizontally (guards[i])) && guards[i].followingPlayer) &&
+               !player.isHidden)
             {
                cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
                player.movementAllowed = false;
                gameOver.Visible = true;
             }
+         }
+
+         #endregion
+
+         #region Cotton Candy Radius Detection
+         if (cottonCandyBomb.isActive)
+         {
+            for (int i = 0; i < guards.Length; i++)
+            {
+               if (cottonCandyBomb.isWithinDetectionRadius( guards[i]))
+               {
+                  guards[i].detectionRadius = (guards[i].detectionRadius/2);
+               }
+            }
+         }
+
+         #endregion
+
+         #region Hiding
+
+         bool isPlayerHidden = false;
+         for (int i = 0; i < folliage.Length; i++)
+         {
+
+            if (player.collidesWithAbove (folliage[i]) || player.collidesWithBelow (folliage[i]))
+            {
+               isPlayerHidden = true;
+            }
+
+            player.isHidden = isPlayerHidden;
          }
 
          #endregion
@@ -237,17 +277,17 @@ namespace GrandTheftCandy
             }
          }
 
-         if (!ableToPause && pauseTimer > 0)
-         {
-            pauseTimer--;
-         }
+      if (!ableToPause && pauseTimer > 0)
+      {
+         pauseTimer--;
+      }
 
-         if (pauseTimer < 1 && !ableToPause)
-         {
-            ableToPause = true;
-         }
+      if (pauseTimer < 1 && !ableToPause)
+      {
+         ableToPause = true;
+      }
 
-         #endregion
+      #endregion
 
          base.Update(gameTime);
       }
@@ -280,9 +320,11 @@ namespace GrandTheftCandy
       public void initializeMothers ()
       {
          string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
-         mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother0", true);
-         mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 250), Color.White, true, "Mother1", true);
+         mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (250, 600), Color.White, true, "Mother0", true);
+         mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 800), Color.White, true, "Mother1", true);
          mothers[2] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2250, 400), Color.White, true, "Mother2", true);
+         mothers[3] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2500, 750), Color.White, true, "Mother3", true);
+         mothers[4] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1000, 300), Color.White, true, "Mother4", true);
       }
 
       public void initializeGuards ()
