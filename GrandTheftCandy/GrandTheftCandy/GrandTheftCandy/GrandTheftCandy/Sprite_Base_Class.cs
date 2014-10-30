@@ -150,6 +150,14 @@ namespace GrandTheftCandy
          }
       }
 
+      public Color spriteColor
+      {
+         set
+         {
+            m_spriteRenderColor = value;
+         }
+      }
+
       /// <summary>
       /// Returns the bounding box for the sprite.
       /// </summary>

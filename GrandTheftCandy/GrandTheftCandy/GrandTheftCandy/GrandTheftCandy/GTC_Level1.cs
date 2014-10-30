@@ -260,6 +260,15 @@ namespace GrandTheftCandy
                isPlayerHidden = true;
             }
 
+            if (isPlayerHidden)
+            {
+               player.spriteColor = Color.Gray;
+            }
+            else
+            {
+               player.spriteColor = Color.White;
+            }
+
             player.isHidden = isPlayerHidden;
          }
 
@@ -344,13 +353,13 @@ namespace GrandTheftCandy
       public void initializeFolliage ()
       {
          folliage[0] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (500, 450), Color.White, true, "Bush1");
-         folliage[1] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (2600, 500), Color.LightGreen, true, "Bush2");
-         folliage[2] = new Sprite_Base_Class (this, @"Resources\Images\hidingTrash", new Vector2 (750, 200), Color.Gray, true, "Trash Can1");
-         folliage[3] = new Sprite_Base_Class (this, @"Resources\Images\hidingtrash", new Vector2 (1800, 200), Color.Green, true, "Trash Can2");
-         folliage[4] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1600, 400), Color.Green, true, "Tree1");
-         folliage[5] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (1500, 650), Color.MediumSeaGreen, true, "Bush3");
-         folliage[6] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1000, 800), Color.LightGreen, true, "Tree2");
-         folliage[7] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (2250, 700), Color.Green, true, "Tree3");
+         folliage[1] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (2600, 500), Color.White, true, "Bush2");
+         folliage[2] = new Sprite_Base_Class (this, @"Resources\Images\hidingTrash", new Vector2 (750, 200), Color.White, true, "Trash Can1");
+         folliage[3] = new Sprite_Base_Class (this, @"Resources\Images\hidingtrash", new Vector2 (1800, 200), Color.White, true, "Trash Can2");
+         folliage[4] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1600, 400), Color.White, true, "Tree1");
+         folliage[5] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (1500, 650), Color.White, true, "Bush3");
+         folliage[6] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1000, 800), Color.White, true, "Tree2");
+         folliage[7] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (2250, 700), Color.White, true, "Tree3");
       }
 
       #endregion
