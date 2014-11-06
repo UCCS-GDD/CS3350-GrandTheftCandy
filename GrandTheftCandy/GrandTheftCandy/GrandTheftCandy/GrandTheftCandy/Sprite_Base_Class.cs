@@ -351,7 +351,7 @@ namespace GrandTheftCandy
       private String[] m_AnimatedTextureNames;
       // The texture array containing all of the animations
       protected Texture2D[] m_AnimatedSprites;
-      private int[] m_SpriteAnimationSequences;
+      protected int[] m_SpriteAnimationSequences;
 
       #endregion
 
@@ -776,6 +776,12 @@ namespace GrandTheftCandy
 
    } // End Player_Controlled_Sprite Class.
 
+
+   // TODO: 
+   // Inherit from Animated Class and redo constructor.
+   // Add temporaty destination. (Temporary path?)
+   // Add a function to set/remove the temporaty destination.
+   // Add the ability to run into objects and detect if continuously running into the and plot a path around.
    /// <summary>
    /// For the mother NPC pass in true for the boolean and give two sprite names for the textures as an array in a_textureFileNames.
    /// The first is the sprite with the baby holding the candy, the second should have the candy missing.
@@ -785,32 +791,32 @@ namespace GrandTheftCandy
    /// 
    /// For a guard, just pass in a single sprite name and leave the second as null.
    /// </summary>
-   public class NPC_Base_Class : Sprite_Base_Class
+   public class NPC_Base_Class : Animated_Sprite
    {
       #region Member Variables
 
-      private String[] m_SpriteVersionTextureNames;
-      private Texture2D[] m_SpriteVersions;
-      private bool m_IsMother;
-      private bool m_HasCandy;
-      private bool m_FollowingPlayer;
-      private bool m_Moveable;
-      private int m_DetectionRadius;
-      private int m_PathIndex;
-      private int m_RespawnCandyTimer;
-      private Vector2 m_CurrentDestination;
-      private Vector2 m_MovementSpeed;
-      private Vector2[] m_PatrolPath;
+      private String[] m_SpriteVersionTextureNames; // Move to NPC_MOTHER for candy/non-candy switching
+      private Texture2D[] m_SpriteVersions; // Move to NPC_MOTHER for candy/non-candy switching
+      private bool m_IsMother; // Remove
+      private bool m_HasCandy; // Move to NPC_MOTHER
+      private bool m_FollowingPlayer; // Move to NPC_GUARD
+      private bool m_Moveable; // Keep
+      private int m_DetectionRadius; // Move to NPC_GUARD
+      private int m_PathIndex; // Keep
+      private int m_RespawnCandyTimer; // Move to NPC_MOTHER
+      private Vector2 m_CurrentDestination; // Keep
+      private Vector2 m_PreviousMovementSpeed; // Remove
+      private Vector2[] m_PatrolPath; // Keep but rename
+
 
       #endregion
 
       #region Constructors
 
-      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, Vector2 a_startingPosition, 
-         Color a_renderColor, bool a_collidable, String a_SpriteName, bool a_IsMother)
-         : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
+         Color a_renderColor, bool a_collidable, String a_SpriteName)
+         : base (a_game, a_textureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
-         m_IsMother = a_IsMother;
          if(m_IsMother)
          {
             m_HasCandy = true;
@@ -821,7 +827,7 @@ namespace GrandTheftCandy
          m_PatrolPath = new Vector2[2];
          m_FollowingPlayer = false;
          m_Moveable = false;
-         m_MovementSpeed = new Vector2 (5, 5);
+         m_PreviousMovementSpeed = new Vector2 (5, 5);
          m_DetectionRadius = 200;
          m_PathIndex = 0;
       }
@@ -914,7 +920,7 @@ namespace GrandTheftCandy
       {
          set
          {
-            m_MovementSpeed = value;
+            m_PreviousMovementSpeed = value;
          }
       }
 
@@ -1009,7 +1015,7 @@ namespace GrandTheftCandy
                Vector2 movementDestination = m_CurrentDestination - this.spritePosition;
                movementDestination.Normalize ();
 
-               this.m_spritePosition += (movementDestination * m_MovementSpeed);
+               this.m_spritePosition += (movementDestination * m_PreviousMovementSpeed);
                calculateDrawOrder ();
             }
             #endregion
@@ -1076,6 +1082,139 @@ namespace GrandTheftCandy
 
       #endregion
    } // End NPC_Base_Class
+
+   // TODO: Finish all mother functions.
+   public class NPC_Mother_Class : NPC_Base_Class
+   {
+      #region Member Variables
+
+      private bool m_HasCandy;
+      private bool m_PreviousCandyState;
+      private int m_CandyRespawnTimer;
+      private int[] m_AlternateSpriteAnimationSequence;
+      private String[] m_AlternateSpriteVersionTextureNames;
+      private Texture2D[] m_AlternateSpriteVersions;
+
+      #endregion
+
+      #region Constructors
+
+      public NPC_Mother_Class (Game a_game, String[] a_TextureFileNames, String[] a_AlternateTextureFileNames,
+         int[] a_SpriteAnimationSequence, int[] a_AlternateSpriteAnimationSequence, Vector2 a_startingPosition,
+         Color a_renderColor, bool a_collidable, String a_SpriteName, int a_CandyRespawnTimer)
+         : base (a_game, a_TextureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+      {
+         m_HasCandy = true;
+         m_PreviousCandyState = true;
+         m_CandyRespawnTimer = a_CandyRespawnTimer;
+         m_AlternateSpriteAnimationSequence = a_AlternateSpriteAnimationSequence;
+         m_AlternateSpriteVersionTextureNames = a_AlternateTextureFileNames;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      public bool hasCandy
+      {
+         get
+         {
+            return m_HasCandy;
+         }
+      }
+
+      public int candyRespawnTimer
+      {
+         set
+         {
+            m_CandyRespawnTimer = value;
+         }
+      }
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent ()
+      {
+         // Load the swappable drawing textures.
+         for(int i = 0; i < m_AlternateSpriteVersionTextureNames.Length; i++)
+         {
+            m_AlternateSpriteVersions[i] = Game.Content.Load<Texture2D> (m_AlternateSpriteVersionTextureNames[i]);
+         }
+
+         base.LoadContent ();
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            // If the drawn sprites need to switch (there was a recent change)
+            if (m_HasCandy != m_PreviousCandyState)
+            {
+               m_PreviousCandyState = m_HasCandy;
+
+               // Swap the textures.
+               Texture2D[] tempTextures = m_AnimatedSprites;
+               m_AnimatedSprites = m_AlternateSpriteVersions;
+               m_AlternateSpriteVersions = tempTextures;
+
+               // Swap the animation sequences.
+               int[] tempAnimations = m_SpriteAnimationSequences;
+               m_SpriteAnimationSequences = m_AlternateSpriteAnimationSequence;
+               m_AlternateSpriteAnimationSequence = tempAnimations;
+            }
+         }
+      }
+
+      #endregion
+
+      #region Functions
+
+
+
+      #endregion
+   } // End NPC_Mother_Class
+
+   // TODO: Start NPC_Guard_Class
+   public class NPC_Guard_Class : NPC_Base_Class
+   {
+      #region Member Variables
+
+
+
+      #endregion
+
+      #region Constructors
+
+
+
+      #endregion
+
+      #region Getters and Setters
+
+
+
+      #endregion
+
+      #region Overridden Functions
+
+
+
+      #endregion
+
+      #region Functions
+
+
+
+      #endregion
+   } // End NPC_Guard_Class
 
    public class Splash_Screen : Sprite_Base_Class
    {
