@@ -19,7 +19,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace GrandTheftCandy
 {
-   class Sprite_Base_Class : DrawableGameComponent
+   public enum spriteAnimationSequence
+   {DownStill, DownMoving, LeftStill, LeftMoving, RightStill, RightMoving, UpStill, UpMoving};
+
+   public class Sprite_Base_Class : DrawableGameComponent
    {
       #region Member Variables
 
@@ -147,6 +150,14 @@ namespace GrandTheftCandy
          }
       }
 
+      public Color spriteColor
+      {
+         set
+         {
+            m_spriteRenderColor = value;
+         }
+      }
+
       /// <summary>
       /// Returns the bounding box for the sprite.
       /// </summary>
@@ -194,7 +205,10 @@ namespace GrandTheftCandy
 
       public override void Update(GameTime gameTime)
       {
-         base.Update(gameTime);
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            base.Update (gameTime);
+         }
       }
 
       public override void Draw(GameTime gameTime)
@@ -206,7 +220,8 @@ namespace GrandTheftCandy
             sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
             sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
                1.0f, SpriteEffects.None, 0f);
-            sb.End ();         }
+            sb.End ();
+         }
 
          base.Draw(gameTime);
       }
@@ -284,6 +299,29 @@ namespace GrandTheftCandy
          return collidesWith;
       }
 
+      /// <summary>
+      /// Returns if the provided sprite is above this sprite.
+      /// </summary>
+      /// <param name="a_sprite"></param>
+      /// <returns></returns>
+      public bool isSpriteAbove (Sprite_Base_Class a_sprite)
+      {
+         if (this.m_spritePosition.Y < a_sprite.m_spritePosition.Y)
+         {
+            return true;
+         }
+         return false;
+      }
+
+      public bool isSpriteBelow (Sprite_Base_Class a_sprite)
+      {
+         if (this.m_spritePosition.Y > a_sprite.m_spritePosition.Y)
+         {
+            return true;
+         }
+         return false;
+      }
+
       protected void calculateDrawOrder ()
       {
          this.DrawOrder = (((int)m_spritePosition.Y - 200) / 5) + 5;
@@ -293,17 +331,27 @@ namespace GrandTheftCandy
 
    } // End Sprite_Base_Class.
 
-   // TODO: Finish animation class and make the NPC class inherit from it.
-   class Animated_Sprite : Sprite_Base_Class
+   // TODO: Tie in NPC Class to Animated Sprites
+   /// <summary>
+   /// When providing the file names for the animated textures,
+   /// provide them in the same order as the enum spriteAnimationSequence.
+   /// </summary>
+   public class Animated_Sprite : Sprite_Base_Class
    {
       #region Member Variables
 
+      private bool m_DrawThisFrame;
+      private spriteAnimationSequence m_CurrentAnimation;
+      private int m_CurrentAnimationSequence;
+      private Rectangle m_CurrentDrawRectangle;
+      protected Vector2 m_MovementSpeed;
+      private Vector2 m_PreviousMovement;
+      protected Vector2 m_CurrentMovement;
+      // String names for each animation.
       private String[] m_AnimatedTextureNames;
-      private Texture2D[] m_AnimatedSprites;
-      /// <summary>
-      /// An intiger array for storing when a sprite animation ends.
-      /// </summary>
-      private int[] m_SpriteAnimationSequence;
+      // The texture array containing all of the animations
+      protected Texture2D[] m_AnimatedSprites;
+      protected int[] m_SpriteAnimationSequences;
 
       #endregion
 
@@ -311,15 +359,45 @@ namespace GrandTheftCandy
 
       public Animated_Sprite(Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
          Color a_renderColor, bool a_collidable, String a_SpriteName)
-         : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+         : base (a_game, a_textureFileNames[0], a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_AnimatedTextureNames = a_textureFileNames;
-         m_SpriteAnimationSequence = a_SpriteAnimationSequence;
+         m_AnimatedSprites = new Texture2D[m_AnimatedTextureNames.Length];
+         m_SpriteAnimationSequences = a_SpriteAnimationSequence;
+         m_PreviousMovement = Vector2.Zero;
+         m_MovementSpeed = Vector2.Zero;
+         m_CurrentAnimation = spriteAnimationSequence.LeftStill;
+         m_CurrentAnimationSequence = 0;
+         m_DrawThisFrame = true;
       }
 
       #endregion
 
       #region Getters and Setters
+
+      public Vector2 movementSpeed
+      {
+         get
+         {
+            return m_MovementSpeed;
+         }
+         set
+         {
+            m_MovementSpeed = value;
+         }
+      }
+
+      public Vector2 currentMovement
+      {
+         get
+         {
+            return m_CurrentMovement;
+         }
+         set
+         {
+            m_CurrentMovement = value;
+         }
+      }
 
       #endregion
 
@@ -332,6 +410,9 @@ namespace GrandTheftCandy
             m_AnimatedSprites[i] = Game.Content.Load<Texture2D> (m_AnimatedTextureNames[i]);
          }
 
+         // Initialize the draw rectangle with the diminsions of a "still" sprite.
+         m_CurrentDrawRectangle = new Rectangle (0, 0, m_AnimatedSprites[0].Width, m_AnimatedSprites[0].Height);
+
          base.LoadContent ();
       }
 
@@ -342,43 +423,155 @@ namespace GrandTheftCandy
 
       public override void Update (GameTime gameTime)
       {
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            #region Sprite Sequence Update
+
+            // Case 1: Previously still, now moving
+            if ((m_PreviousMovement == Vector2.Zero) && (m_CurrentMovement != Vector2.Zero))
+            {
+               calculateCurrentMovingAnimation ();
+            }
+
+            // Case 2: Previously moving, now still
+            else if ((m_CurrentMovement == Vector2.Zero) && (m_PreviousMovement != Vector2.Zero))
+            {
+               calculateCurrentStillAnimation ();
+            }
+            // Case 3: Previously moving, Still moving (Make sure the general direction is the same)
+            else if ((m_CurrentMovement != Vector2.Zero) && (m_PreviousMovement != Vector2.Zero))
+            {
+               calculateCurrentMovingAnimation ();
+            }
+
+            // Update the previous movement for the next cycle.
+            m_PreviousMovement = m_CurrentMovement;
+
+            #endregion
+         }
+
          base.Update (gameTime);
       }
 
       public override void Draw (GameTime gameTime)
       {
-         //SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
+         SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
 
-         //sb.Begin ();
-         //sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-         //   1.0f, SpriteEffects.None, 0f);
-         //sb.End ();
+         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+         sb.Draw (m_AnimatedSprites[(int)m_CurrentAnimation], m_spritePosition, m_CurrentDrawRectangle, m_spriteRenderColor, 0f, m_spriteCenter,
+            1.0f, SpriteEffects.None, 0f);
+         sb.End ();
 
-         base.Draw (gameTime);
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            if (m_DrawThisFrame)
+            {
+               // If the animation sequence is a movement one, incriment to the next animation sequence and move the draw rectangle.
+               if ((int)m_CurrentAnimation % 2 != 0)
+               {
+                  if (m_CurrentAnimationSequence < m_SpriteAnimationSequences[(int)m_CurrentAnimation])
+                  {
+                     m_CurrentAnimationSequence++;
+                     m_CurrentDrawRectangle.Offset (m_AnimatedSprites[0].Width, 0);
+                  }
+                  else
+                  {
+                     m_CurrentAnimationSequence = 0;
+                     m_CurrentDrawRectangle.X = 0;
+                  }
+               }
+            }
+            m_DrawThisFrame = !m_DrawThisFrame;
+         }
       }
 
       #endregion
 
       #region Functions
 
+      public void setMotion (Vector2 a_MovementSpeed, Vector2 a_CurrentMovement)
+      {
+         m_MovementSpeed = a_MovementSpeed;
+         m_CurrentMovement = a_CurrentMovement;
+      }
+
+      protected void calculateCurrentMovingAnimation()
+      {
+         // If the sprite is moving more horizontally than vertically (or equal)
+         if (Math.Abs(m_CurrentMovement.X) >= Math.Abs(m_CurrentMovement.Y))
+         {
+            // If the sprite is moving Left
+            if (m_CurrentMovement.X < 0)
+            {
+               m_CurrentAnimation = spriteAnimationSequence.LeftMoving;
+            }
+            // Else if the sprite is moving Right
+            else
+            {
+               m_CurrentAnimation = spriteAnimationSequence.RightMoving;
+            }
+         }
+         // If the sprite is moving more vertically than horizontally
+         else
+         {
+            // If the sprite is moving Up
+            if (m_CurrentMovement.Y < 0)
+            {
+               m_CurrentAnimation = spriteAnimationSequence.UpMoving;
+            }
+            // Else If the sprite is moving Down
+            else
+            {
+               m_CurrentAnimation = spriteAnimationSequence.DownMoving;
+            }
+         }
+      }
+
+      protected void calculateCurrentStillAnimation ()
+      {
+         // If the sprite was previously moving down.
+         if (m_CurrentAnimation == spriteAnimationSequence.DownMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.DownStill;
+         }
+         else if (m_CurrentAnimation == spriteAnimationSequence.LeftMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.LeftStill;
+         }
+         else if (m_CurrentAnimation == spriteAnimationSequence.RightMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.RightStill;
+         }
+         else if (m_CurrentAnimation == spriteAnimationSequence.UpMoving)
+         {
+            m_CurrentAnimation = spriteAnimationSequence.UpStill;
+         }
+
+         m_CurrentDrawRectangle.X = 0;
+      }
+
       #endregion
    } // End Animated_Sprite Class.
 
-   class Player_Controlled_Sprite : Sprite_Base_Class
+   public class Player_Controlled_Sprite : Animated_Sprite
    {
       #region Member Variables
 
       private bool m_MovementAllowed;
+      private bool m_IsHidden;
+      private int m_CandyCount;
 
       #endregion
 
       #region Constructors
 
-      public Player_Controlled_Sprite (Game a_game, String a_textureFileName, Vector2 a_startingPosition, 
+      public Player_Controlled_Sprite (Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
          Color a_renderColor, bool a_collidable, String a_SpriteName)
-         : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+         : base(a_game, a_textureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_MovementAllowed = false;
+         m_IsHidden = false;
+         m_CandyCount = 0;
       }
 
       #endregion
@@ -394,6 +587,30 @@ namespace GrandTheftCandy
          set
          {
             m_MovementAllowed = value;
+         }
+      }
+
+      public bool isHidden
+      {
+         get
+         {
+            return m_IsHidden;
+         }
+         set
+         {
+            m_IsHidden = value;
+         }
+      }
+
+      public int candyCount
+      {
+         get
+         {
+            return m_CandyCount;
+         }
+         set
+         {
+            m_CandyCount = value;
          }
       }
 
@@ -421,122 +638,147 @@ namespace GrandTheftCandy
 
       public override void Update(GameTime gameTime)
       {
-         if (m_MovementAllowed)
+         if (((GTC_Level1)this.Game).gameNotPaused)
          {
-            KeyboardState keyboardInput = Keyboard.GetState ();
-
-            #region Move Down
-            if (keyboardInput.IsKeyDown (Keys.S) || keyboardInput.IsKeyDown (Keys.Down))
+            if (m_MovementAllowed)
             {
-               if (m_spritePosition.Y < (this.GraphicsDevice.Viewport.Height - 5))
+               KeyboardState keyboardInput = Keyboard.GetState ();
+
+               #region Player Movement
+
+               Vector2 tempMovement = Vector2.Zero;
+
+               #region Move Down
+               if (keyboardInput.IsKeyDown (Keys.S) || keyboardInput.IsKeyDown (Keys.Down))
                {
-                  m_spritePosition.Y += 5;
-                  this.DrawOrder++;
-                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-                  this.Game.Components.CopyTo (spriteList, 0);
-                  for (int i = 0; i < spriteList.Length; i++)
+                  if (m_spritePosition.Y < 950)
                   {
-                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                     {
-                        m_spritePosition.Y -= 5;
-                        this.DrawOrder--;
-                     }
+                     tempMovement.Y = 5;
                   }
                }
-            }
-            #endregion
+               #endregion
 
-            #region Move Left
-            if (keyboardInput.IsKeyDown (Keys.A) || keyboardInput.IsKeyDown (Keys.Left))
-            {
-               if (m_spritePosition.X - (m_textureImage.Width / 2) > 0)
+               #region Move Left
+               if (keyboardInput.IsKeyDown (Keys.A) || keyboardInput.IsKeyDown (Keys.Left))
                {
-                  m_spritePosition.X -= 5;
-                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-                  this.Game.Components.CopyTo (spriteList, 0);
-                  for (int i = 0; i < spriteList.Length; i++)
+                  if (m_spritePosition.X - (this.boundingBox.Width / 2) > 0)
                   {
-                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                     {
-                        m_spritePosition.X += 5;
-                     }
-
-                     if (m_spritePosition.X > 400 && m_spritePosition.X < 2600)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (400 - m_spritePosition.X, 0, 0);
-                     }
-                     else if (m_spritePosition.X < 400)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (0, 0, 0);
-                     }
+                     tempMovement.X = -5;
                   }
                }
-            }
-            #endregion
+               #endregion
 
-            #region Move Right
-            if (keyboardInput.IsKeyDown (Keys.D) || keyboardInput.IsKeyDown (Keys.Right))
-            {
-               if (m_spritePosition.X < 2600)
+               #region Move Right
+               if (keyboardInput.IsKeyDown (Keys.D) || keyboardInput.IsKeyDown (Keys.Right))
                {
-                  m_spritePosition.X += 5;
-                  Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-                  this.Game.Components.CopyTo (spriteList, 0);
-                  for (int i = 0; i < spriteList.Length; i++)
+                  if (m_spritePosition.X < 3000)
                   {
-                     if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                     {
-                        m_spritePosition.X -= 5;
-                     }
-
-                     if (m_spritePosition.X < 2600 && m_spritePosition.X > 400)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (400 - m_spritePosition.X, 0, 0);
-                     }
-                     else if (m_spritePosition.X > 2600)
-                     {
-                        ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (2600, 0, 0);
-                     }
+                     tempMovement.X = 5;
                   }
                }
-            }
-            #endregion
+               #endregion
 
-            #region Move Up
-            if (keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up))
-            {
-               m_spritePosition.Y -= 5;
-               this.DrawOrder--;
-               Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
-               this.Game.Components.CopyTo (spriteList, 0);
-               for (int i = 0; i < spriteList.Length; i++)
+               #region Move Up
+               if ((keyboardInput.IsKeyDown (Keys.W) || keyboardInput.IsKeyDown (Keys.Up)) && this.spritePosition.Y > 190)
                {
-                  if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
-                  {
-                     m_spritePosition.Y += 5;
-                     this.DrawOrder++;
-                  }
+                  tempMovement.Y = -5;
                }
+               #endregion
+
+               // Move the player.
+               this.m_spritePosition.X += tempMovement.X;
+               this.m_spritePosition.Y += tempMovement.Y;
+               this.calculateDrawOrder ();
+
+               // If the player Collides with anything, undo the mvoement.
+               if (playerCollidesWithAnything ())
+               {
+                  this.m_spritePosition.X -= tempMovement.X;
+                  this.m_spritePosition.Y -= tempMovement.Y;
+                  this.calculateDrawOrder ();
+               }
+
+               #endregion
+
+               #region Camera Movement
+
+               Vector2 cameraTranslation = Vector2.Zero;
+
+               #region Camera X Translation
+
+               if (m_spritePosition.X <= 400)
+               {
+                  cameraTranslation.X = 0;
+               }
+               else if (m_spritePosition.X >= 2600)
+               {
+                  cameraTranslation.X = -2200;
+               }
+               else
+               {
+                  cameraTranslation.X = 400 - m_spritePosition.X;
+               }
+
+               #endregion
+
+               #region Camera Y Translation
+
+               if (m_spritePosition.Y <= 300)
+               {
+                  cameraTranslation.Y = 0;
+               }
+               else if (m_spritePosition.Y >= 700)
+               {
+                  cameraTranslation.Y = -400;
+               }
+               else
+               {
+                  cameraTranslation.Y = 300 - m_spritePosition.Y;
+               }
+
+               #endregion
+
+               ((GTC_Level1)this.Game).cameraPosition = Matrix.CreateTranslation (cameraTranslation.X, cameraTranslation.Y, 0);
+
+               #endregion
+
+               m_CurrentMovement = tempMovement;
             }
-            #endregion
+
+            base.Update (gameTime);
          }
-
-         base.Update(gameTime);
       }
 
       public override void Draw(GameTime gameTime)
       {
-         base.Draw(gameTime);
+         base.Draw (gameTime);
       }
 
       #endregion
 
       #region Functions
 
+      private bool playerCollidesWithAnything ()
+      {
+         Sprite_Base_Class[] spriteList = new Sprite_Base_Class[this.Game.Components.Count];
+         this.Game.Components.CopyTo (spriteList, 0);
+         for (int i = 0; i < spriteList.Length; i++)
+         {
+            if (this.collidesHalfHorizontally (spriteList[i]) && this.spriteName != spriteList[i].spriteName)
+            {
+               return true;
+            }
+         }
+         return false;
+      }
+
       #endregion
 
    } // End Player_Controlled_Sprite Class.
 
+
+   // TODO:
+   // Add the ability to run into objects and detect if continuously running into the and plot a path around.
    /// <summary>
    /// For the mother NPC pass in true for the boolean and give two sprite names for the textures as an array in a_textureFileNames.
    /// The first is the sprite with the baby holding the candy, the second should have the candy missing.
@@ -546,84 +788,35 @@ namespace GrandTheftCandy
    /// 
    /// For a guard, just pass in a single sprite name and leave the second as null.
    /// </summary>
-   class NPC_Base_Class : Sprite_Base_Class
+   public class NPC_Base_Class : Animated_Sprite
    {
       #region Member Variables
 
-      private String[] m_SpriteVersionTextureNames;
-      private Texture2D[] m_SpriteVersions;
-      private bool m_IsMother;
-      private bool m_HasCandy;
-      private bool m_FollowingPlayer;
-      private bool m_Moveable;
-      private int m_DetectionRadius;
-      private int m_PathIndex;
-      private Vector2 m_CurrentDestination;
-      private Vector2 m_MovementSpeed;
-      private Vector2[] m_PatrolPath;
+      private bool m_Moveable; // Keep
+      private int m_PathIndex; // Keep
+      private Vector2 m_CurrentDestination; // Keep
+      private Vector2 m_TemporaryDestination; // Keep
+      protected Vector2 m_CurrentMovementSpeed; //Keep
+      private Vector2[] m_FollowPath; // Keep
+
 
       #endregion
 
       #region Constructors
 
-      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, Vector2 a_startingPosition, 
-         Color a_renderColor, bool a_collidable, String a_SpriteName, bool a_IsMother)
-         : base (a_game, null, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
+      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence,
+         Vector2 a_startingPosition, Vector2 a_MovementSpeed, Color a_renderColor, bool a_collidable, String a_SpriteName)
+         : base (a_game, a_textureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
-         m_IsMother = a_IsMother;
-         if(m_IsMother)
-         {
-            m_HasCandy = true;
-         }
-         m_SpriteVersionTextureNames = a_textureFileNames;
-         m_SpriteVersions = new Texture2D[2];
-         m_PatrolPath = new Vector2[2];
-         m_FollowingPlayer = false;
-         m_Moveable = false;
-         m_MovementSpeed = new Vector2 (5, 5);
-         m_DetectionRadius = 200;
+         // New Constructor Code
+         m_CurrentMovementSpeed = a_MovementSpeed;
          m_PathIndex = 0;
+         m_FollowPath = new Vector2[2];
       }
 
       #endregion
 
       #region Getters and Setters
-
-      public bool hasCandy
-      {
-         get
-         {
-            return m_HasCandy;
-         }
-         set
-         {
-            m_HasCandy = value;
-         }
-      }
-
-      public bool isMother
-      {
-         get
-         {
-            return m_IsMother;
-         }
-         set
-         {
-            m_IsMother = value;
-         }
-      }
-
-      public bool followingPlayer
-      {
-         get
-         {
-            return m_FollowingPlayer;
-         }
-         set
-         {
-            m_FollowingPlayer = value;
-         }
-      }
 
       public bool moveable
       {
@@ -651,25 +844,21 @@ namespace GrandTheftCandy
 
       public Vector2 movementSpeed
       {
+         get
+         {
+            return m_CurrentMovementSpeed;
+         }
          set
          {
-            m_MovementSpeed = value;
+            m_CurrentMovementSpeed = value;
          }
       }
 
-      public Vector2[] patrolPath
+      public Vector2[] followPath
       {
          set
          {
-            m_PatrolPath = value;
-         }
-      }
-
-      public int detectionRadius
-      {
-         set
-         {
-            m_DetectionRadius = value;
+            m_FollowPath = value;
          }
       }
 
@@ -679,22 +868,6 @@ namespace GrandTheftCandy
 
       protected override void LoadContent ()
       {
-         if(m_IsMother)
-         {
-            for(int i = 0; i < m_SpriteVersionTextureNames.Length; i++)
-            {
-               m_SpriteVersions[i] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[i]);
-            }
-         }
-         else
-         {
-            m_SpriteVersions[0] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[0]);
-         }
-
-         m_spriteCenter = new Vector2 (m_SpriteVersions[0].Height * .5f, m_SpriteVersions[0].Width * .5f);
-         m_SpriteHeight = m_SpriteVersions[0].Height;
-         m_SpriteWidth = m_SpriteVersions[0].Width;
-
          base.LoadContent ();
       }
 
@@ -705,83 +878,55 @@ namespace GrandTheftCandy
 
       public override void Update (GameTime gameTime)
       {
-         #region Guard Follow Behavior
-         if (!isMother && m_Moveable)
+         if (((GTC_Level1)this.Game).gameNotPaused)
          {
-            // If the player is within the detection radius of the guard
-            bool withinDetectionRadius = ((((Player_Controlled_Sprite)((GTC_Level1)this.Game)
-               .Components[0]).playerPosition - this.m_spritePosition).Length ()) < m_DetectionRadius;
-
-            if (withinDetectionRadius && !m_FollowingPlayer)
+            if (m_Moveable)
             {
-               m_FollowingPlayer = true;
-            }
-            else if (!withinDetectionRadius && m_FollowingPlayer)
-            {
-               m_FollowingPlayer = false;
-            }
-
-            // If the guard is currently following the player, set the current destination to the players position.
-            if (m_FollowingPlayer)
-            {
-               m_CurrentDestination = ((Player_Controlled_Sprite)((GTC_Level1)this.Game).Components[0]).playerPosition;
-            }
-            else
-            {
-               // Otherwise, test if the guard has reached its current destination.
-               if (m_spritePosition == m_PatrolPath[m_PathIndex] || isWithinDistanceOfDestination(3))
+               // If there is a temporary destination.
+               if ((m_TemporaryDestination != Vector2.Zero) && (m_CurrentDestination != m_TemporaryDestination))
                {
-                  if ((m_PathIndex + 1) >= m_PatrolPath.Length)
+                  // Is within the acceptable distance of the destination.
+                  if (isWithinDistanceOfDestination (3))
                   {
-                     m_PathIndex = 0;
+                     m_TemporaryDestination = Vector2.Zero;
+                     m_CurrentDestination = m_FollowPath[m_PathIndex];
                   }
                   else
                   {
-                     m_PathIndex++;
+                     m_CurrentDestination = m_TemporaryDestination;
                   }
                }
-               // Set the new destination.
-               m_CurrentDestination = m_PatrolPath[m_PathIndex];
+               else
+               {
+                  if (m_CurrentDestination != m_FollowPath[m_PathIndex])
+                  {
+                     m_CurrentDestination = m_FollowPath[m_PathIndex];
+                  }
+                  else if (isWithinDistanceOfDestination (3))
+                  {
+                     m_PathIndex++;
+                     m_CurrentDestination = m_FollowPath[m_PathIndex];
+                  }
+               }
+
+               // Calculate the new movement vector based on the current destination.
+               m_CurrentMovement = m_CurrentDestination - this.spritePosition;
+               m_CurrentMovement.Normalize ();
+
+               this.m_spritePosition += (m_CurrentMovementSpeed * m_CurrentMovement);
+               calculateDrawOrder ();
+            }
+            else
+            {
+               m_CurrentMovement = Vector2.Zero;
             }
 
-            // Calculate the new movement vector based on the current destination.
-            Vector2 movementDestination = m_CurrentDestination - this.spritePosition;
-            movementDestination.Normalize ();
-
-            this.m_spritePosition += (movementDestination * m_MovementSpeed);
-            calculateDrawOrder ();
+            base.Update (gameTime);
          }
-         #endregion
-
-         base.Update (gameTime);
       }
 
       public override void Draw (GameTime gameTime)
       {
-         SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
-
-         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
-         // If the mother has candy use the sprite that has the baby holding candy.
-         if (m_IsMother)
-         {
-            if (m_HasCandy)
-            {
-               sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-                  1.0f, SpriteEffects.None, 0f);
-            }
-            else
-            {
-               sb.Draw (m_SpriteVersions[1], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-                  1.0f, SpriteEffects.None, 0f);
-            }
-         }
-         else
-         {
-            sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
-                  1.0f, SpriteEffects.None, 0f);
-         }
-         sb.End ();
-
          base.Draw (gameTime);
       }
 
@@ -798,10 +943,228 @@ namespace GrandTheftCandy
          return isWithinDistance;
       }
 
+      public void setTempDestination (Vector2 a_Destination)
+      {
+         m_TemporaryDestination = a_Destination;
+      }
+
       #endregion
    } // End NPC_Base_Class
 
-   class Splash_Screen : Sprite_Base_Class
+   // TODO: Check that ALL Functionality is the same.
+   public class NPC_Mother_Class : NPC_Base_Class
+   {
+      #region Member Variables
+
+      private bool m_HasCandy;
+      private bool m_PreviousCandyState;
+      private int m_CandyRespawnTimer;
+      private int[] m_AlternateSpriteAnimationSequence;
+      private String[] m_AlternateSpriteVersionTextureNames;
+      private Texture2D[] m_AlternateSpriteVersions;
+
+      #endregion
+
+      #region Constructors
+
+      public NPC_Mother_Class (Game a_game, String[] a_TextureFileNames, String[] a_AlternateTextureFileNames,
+         int[] a_SpriteAnimationSequence, int[] a_AlternateSpriteAnimationSequence, Vector2 a_startingPosition,
+         Vector2 a_MovementSpeed, Color a_renderColor, bool a_collidable, String a_SpriteName, int a_CandyRespawnTimer)
+         : base (a_game, a_TextureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_MovementSpeed,
+         a_renderColor, a_collidable, a_SpriteName)
+      {
+         m_HasCandy = true;
+         m_PreviousCandyState = true;
+         m_CandyRespawnTimer = a_CandyRespawnTimer;
+         m_AlternateSpriteAnimationSequence = a_AlternateSpriteAnimationSequence;
+         m_AlternateSpriteVersionTextureNames = a_AlternateTextureFileNames;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      public bool hasCandy
+      {
+         get
+         {
+            return m_HasCandy;
+         }
+      }
+
+      public int candyRespawnTimer
+      {
+         set
+         {
+            m_CandyRespawnTimer = value;
+         }
+      }
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent ()
+      {
+         // Load the swappable drawing textures.
+         for(int i = 0; i < m_AlternateSpriteVersionTextureNames.Length; i++)
+         {
+            m_AlternateSpriteVersions[i] = Game.Content.Load<Texture2D> (m_AlternateSpriteVersionTextureNames[i]);
+         }
+
+         base.LoadContent ();
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            #region Sprite Switching
+            // If the drawn sprites need to switch (there was a recent change)
+            if (m_HasCandy != m_PreviousCandyState)
+            {
+               m_PreviousCandyState = m_HasCandy;
+
+               // Swap the textures.
+               Texture2D[] tempTextures = m_AnimatedSprites;
+               m_AnimatedSprites = m_AlternateSpriteVersions;
+               m_AlternateSpriteVersions = tempTextures;
+
+               // Swap the animation sequences.
+               int[] tempAnimations = m_SpriteAnimationSequences;
+               m_SpriteAnimationSequences = m_AlternateSpriteAnimationSequence;
+               m_AlternateSpriteAnimationSequence = tempAnimations;
+            }
+
+            #endregion
+
+            #region Mother Candy Respawn
+            if (!m_HasCandy && m_CandyRespawnTimer > 0)
+            {
+               m_CandyRespawnTimer--;
+            }
+            else if (!m_HasCandy && m_CandyRespawnTimer < 1)
+            {
+               m_HasCandy = true;
+            }
+            #endregion
+         }
+      }
+
+      #endregion
+
+      #region Functions
+
+
+
+      #endregion
+   } // End NPC_Mother_Class
+
+   // TODO: Check ALL Functionality is the same.
+   public class NPC_Guard_Class : NPC_Base_Class
+   {
+      #region Member Variables
+
+      private bool m_FollowingPlayer;
+      private int m_DetectionRadius;
+
+      #endregion
+
+      #region Constructors
+
+      public NPC_Guard_Class (Game a_game, String[] a_TextureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition,
+         Vector2 a_MovementSpeed, Color a_renderColor, bool a_collidable, String a_SpriteName, int a_DetectionRadius)
+         : base (a_game, a_TextureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_MovementSpeed,
+         a_renderColor, a_collidable, a_SpriteName)
+      {
+         m_FollowingPlayer = false;
+         m_DetectionRadius = a_DetectionRadius;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      public bool followingPlayer
+      {
+         get
+         {
+            return m_FollowingPlayer;
+         }
+         set
+         {
+            m_FollowingPlayer = value;
+         }
+      }
+
+      public int detectionRadius
+      {
+         get
+         {
+            return m_DetectionRadius;
+         }
+         set
+         {
+            m_DetectionRadius = value;
+         }
+      }
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent ()
+      {
+         base.LoadContent ();
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            Vector2 distanceToPlayer = ((GTC_Level1)this.Game).player.playerPosition - this.spritePosition;
+            bool isWithinDetectionRadius = distanceToPlayer.Length() < m_DetectionRadius;
+
+            if (isWithinDetectionRadius)
+            {
+               m_FollowingPlayer = true;
+               setTempDestination (((GTC_Level1)this.Game).player.playerPosition);
+            }
+            else
+            {
+               m_FollowingPlayer = false;
+               setTempDestination (Vector2.Zero);
+            }
+
+            base.Update (gameTime);
+         }
+      }
+
+      public override void Draw (GameTime gameTime)
+      {
+         base.Draw (gameTime);
+      }
+
+      #endregion
+
+      #region Functions
+
+
+
+      #endregion
+   } // End NPC_Guard_Class
+
+   public class Splash_Screen : Sprite_Base_Class
    {
       #region Member Variables
 
@@ -843,6 +1206,7 @@ namespace GrandTheftCandy
             this.DrawOrder = 100;
             this.Game.IsMouseVisible = false;
             ((Player_Controlled_Sprite)((GTC_Level1)this.Game).Components[0]).movementAllowed = true;
+            ((GTC_Level1)this.Game).gameBar.Visible = true;
          }
 
          base.Update(gameTime);
@@ -859,4 +1223,237 @@ namespace GrandTheftCandy
 
       #endregion
    } // End Splash_Screen Class.
+
+   // TODO: Add a method to draw text
+   public class Game_Bar : Sprite_Base_Class
+   {
+      #region Member Variables
+
+      private SpriteFont m_DrawableFont;
+      private Vector2 m_CandyCounterPosition;
+
+      #endregion
+
+      #region Constructors
+
+      public Game_Bar (Game a_game, String a_textureFileName, Vector2 a_startingPosition, Color a_renderColor, String a_SpriteName)
+         : base(a_game, a_textureFileName, a_startingPosition, a_renderColor, false, a_SpriteName)
+      {
+         m_CandyCounterPosition = new Vector2 (110, 2);
+         this.DrawOrder = 1000;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent()
+      {
+         m_DrawableFont = this.Game.Content.Load<SpriteFont> ("SpriteFont1");
+
+         base.LoadContent();
+      }
+
+      public override void Initialize()
+      {
+         base.Initialize();
+      }
+
+      public override void Update(GameTime gameTime)
+      {
+         base.Update(gameTime);
+      }
+
+      public override void Draw(GameTime gameTime)
+      {
+         SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
+
+         sb.Begin ();
+
+         sb.Draw (m_textureImage, m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+         if (this.Visible)
+         {
+            string s_CandyCountString = "Candy Count: " + ((GTC_Level1)this.Game).player.candyCount; 
+            sb.DrawString (m_DrawableFont, s_CandyCountString, m_CandyCounterPosition, Color.Black);
+         }
+
+         sb.End ();
+      }
+
+      #endregion
+
+      #region Functions
+
+      #endregion
+   }
+
+   public class Cotton_Candy_Bomb : Sprite_Base_Class
+   {
+      #region Member Variables
+
+      protected bool m_IsActive;
+      protected bool m_AbleToActivate;
+      protected bool m_UpdateThisFrame;
+      protected int m_CooldownTimer;
+      protected int m_ActiveTimer;
+      protected int m_EffectRadius;
+      protected int m_CurrentDrawSequence;
+      protected Rectangle m_DrawRectangle;
+      protected Texture2D m_AnimatedTexture;
+
+      #endregion
+
+      #region Constructors
+
+      public Cotton_Candy_Bomb (Game a_game, String a_textureFileName, Vector2 a_startingPosition,
+         int a_EffectRadius, String a_SpriteName):
+         base(a_game, null, a_startingPosition, Color.White, false, a_SpriteName)
+      {
+         m_IsActive = false;
+         m_AbleToActivate = true;
+         m_UpdateThisFrame = true;
+         m_CooldownTimer = 0;
+         m_ActiveTimer = 0;
+         m_CurrentDrawSequence = 0;
+         m_EffectRadius = a_EffectRadius;
+         m_textureFileName = a_textureFileName;
+      }
+
+      #endregion
+
+      #region Getters and Setters
+
+      public bool isActive
+      {
+         get
+         {
+            return m_IsActive;
+         }
+      }
+
+      #endregion
+
+      #region Overridden Functions
+
+      protected override void LoadContent ()
+      {
+         m_AnimatedTexture = Game.Content.Load<Texture2D> (m_textureFileName);
+         m_SpriteHeight = 500;
+         m_SpriteWidth = 500;
+         m_spriteCenter = new Vector2 (m_SpriteWidth/2, m_SpriteHeight/2);
+         m_DrawRectangle = new Rectangle (0, 0, m_SpriteWidth, m_SpriteHeight);
+         this.DrawOrder = 500;
+      }
+
+      public override void Initialize ()
+      {
+         base.Initialize ();
+      }
+
+      public override void Update (GameTime gameTime)
+      {
+         if (((GTC_Level1)this.Game).gameNotPaused)
+         {
+            base.Update (gameTime);
+
+            #region Activate
+
+            if (!m_IsActive && m_AbleToActivate &&(((GTC_Level1)this.Game).player.candyCount > 0))
+            {
+               KeyboardState keyboardInput = Keyboard.GetState ();
+
+               if (keyboardInput.IsKeyDown (Keys.Space))
+               {
+                  this.Visible = true;
+                  m_IsActive = true;
+                  m_AbleToActivate = false;
+                  m_CooldownTimer = (15 * 30); //Half a minute
+                  m_ActiveTimer = 60;
+                  m_spritePosition = ((GTC_Level1)this.Game).player.playerPosition;
+                  ((GTC_Level1)this.Game).player.candyCount--;
+               }
+            }
+
+            #endregion
+
+            #region Update Timers
+
+            if (m_CooldownTimer > 0)
+            {
+               m_CooldownTimer--;
+
+               if (m_CooldownTimer < 1)
+               {
+                  m_AbleToActivate = true;
+               }
+            }
+
+            if (m_ActiveTimer > 0)
+            {
+               m_ActiveTimer--;
+
+               // If the bomb is no longer active.
+               if (m_ActiveTimer < 1)
+               {
+                  m_IsActive = false;
+                  this.Visible = false;
+               }
+            }
+
+            #endregion
+         }
+      }
+
+      public override void Draw (GameTime gameTime)
+      {
+
+         if (this.Visible)
+         {
+            SpriteBatch sb = ((GTC_Level1)this.Game).spriteBatch;
+
+            sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+            sb.Draw (m_AnimatedTexture, m_spritePosition, m_DrawRectangle, m_spriteRenderColor, 0f, m_spriteCenter,
+               1.0f, SpriteEffects.None, 0f);
+            sb.End ();
+
+            if (m_UpdateThisFrame)
+            {
+               m_CurrentDrawSequence++;
+               if (m_CurrentDrawSequence < 6)
+               {
+                  m_DrawRectangle.Offset (m_SpriteWidth, 0);
+               }
+               else
+               {
+                  m_CurrentDrawSequence = 0;
+                  m_DrawRectangle.X = 0;
+               }
+            }
+
+            m_UpdateThisFrame = !m_UpdateThisFrame;
+         }
+
+         base.Draw (gameTime);
+      }
+
+      #endregion
+
+      #region Functions
+
+      public bool isWithinDetectionRadius (Sprite_Base_Class a_sprite)
+      {
+         bool isWithinDistance;
+
+         isWithinDistance = (this.spritePosition - a_sprite.spritePosition).Length () < m_EffectRadius;
+
+         return isWithinDistance;
+      }
+
+      #endregion
+   }
 }

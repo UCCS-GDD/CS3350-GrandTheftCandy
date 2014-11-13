@@ -12,6 +12,42 @@
       <Time>2014-09-27T13:00:28.7212433-06:00</Time>
     </Item>
     <Item>
+      <Source>Resources\Images\mainSpriteDownStill.png</Source>
+      <Name>Resources\Images\mainSpriteDownStill</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteDownStill.xnb</Output>
+      <Time>2014-10-09T13:24:43.2514291-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteLeftStill.png</Source>
+      <Name>Resources\Images\mainSpriteLeftStill</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteLeftStill.xnb</Output>
+      <Time>2014-10-09T13:24:43.2564329-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteRightStill.png</Source>
+      <Name>Resources\Images\mainSpriteRightStill</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteRightStill.xnb</Output>
+      <Time>2014-10-09T13:24:43.2624322-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\mainSpriteUpStill.png</Source>
+      <Name>Resources\Images\mainSpriteUpStill</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteUpStill.xnb</Output>
+      <Time>2014-10-09T13:24:43.2694316-06:00</Time>
+    </Item>
+    <Item>
       <Source>Resources\Images\bluesquare.png</Source>
       <Name>Resources\Images\bluesquare</Name>
       <Importer>TextureImporter</Importer>
@@ -30,15 +66,6 @@
       <Time>2014-10-09T13:25:19.500846-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\candysprite0.png</Source>
-      <Name>Resources\Images\candysprite0</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\candysprite0.xnb</Output>
-      <Time>2014-10-04T10:56:41.2659784-06:00</Time>
-    </Item>
-    <Item>
       <Source>Resources\Images\Circle.png</Source>
       <Name>Resources\Images\Circle</Name>
       <Importer>TextureImporter</Importer>
@@ -55,33 +82,6 @@
       <Options>None</Options>
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\ConceptArtCandyGrandTheft.xnb</Output>
       <Time>2014-10-09T13:25:19.495915-06:00</Time>
-    </Item>
-    <Item>
-      <Source>Resources\Images\floorbg.png</Source>
-      <Name>Resources\Images\floorbg</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\floorbg.xnb</Output>
-      <Time>2014-10-04T09:49:57.2095654-06:00</Time>
-    </Item>
-    <Item>
-      <Source>Resources\Images\gamebar.png</Source>
-      <Name>Resources\Images\gamebar</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar.xnb</Output>
-      <Time>2014-10-09T13:25:19.5028465-06:00</Time>
-    </Item>
-    <Item>
-      <Source>Resources\Images\gamebar1.png</Source>
-      <Name>Resources\Images\gamebar1</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar1.xnb</Output>
-      <Time>2014-10-04T10:53:16.3183829-06:00</Time>
     </Item>
     <Item>
       <Source>Resources\Images\gameover0.png</Source>
@@ -127,15 +127,6 @@
       <Options>None</Options>
       <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\hidingTree.xnb</Output>
       <Time>2014-10-09T13:24:43.2474281-06:00</Time>
-    </Item>
-    <Item>
-      <Source>Resources\Images\Line.png</Source>
-      <Name>Resources\Images\Line</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-      <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\Line.xnb</Output>
-      <Time>2014-09-27T13:00:28.6622346-06:00</Time>
     </Item>
     <Item>
       <Source>Resources\Images\mallbg.png</Source>
@@ -192,40 +183,85 @@
       <Time>2014-09-27T13:00:28.6752361-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\mainSpriteDownStill.png</Source>
-      <Name>Resources\Images\mainSpriteDownStill</Name>
+      <Source>Resources\Images\mainSpriteDown.png</Source>
+      <Name>Resources\Images\mainSpriteDown</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteDownStill.xnb</Output>
-      <Time>2014-10-09T13:24:43.2514291-06:00</Time>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteDown.xnb</Output>
+      <Time>2014-10-09T13:24:43.2494313-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\mainSpriteLeftStill.png</Source>
-      <Name>Resources\Images\mainSpriteLeftStill</Name>
+      <Source>Resources\Images\mainSpriteLeft.png</Source>
+      <Name>Resources\Images\mainSpriteLeft</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteLeftStill.xnb</Output>
-      <Time>2014-10-09T13:24:43.2564329-06:00</Time>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteLeft.xnb</Output>
+      <Time>2014-10-09T13:24:43.2544288-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\mainSpriteRightStill.png</Source>
-      <Name>Resources\Images\mainSpriteRightStill</Name>
+      <Source>Resources\Images\mainSpriteRight.png</Source>
+      <Name>Resources\Images\mainSpriteRight</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteRightStill.xnb</Output>
-      <Time>2014-10-09T13:24:43.2624322-06:00</Time>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteRight.xnb</Output>
+      <Time>2014-10-09T13:24:43.2594326-06:00</Time>
     </Item>
     <Item>
-      <Source>Resources\Images\mainSpriteUpStill.png</Source>
-      <Name>Resources\Images\mainSpriteUpStill</Name>
+      <Source>Resources\Images\mainSpriteUp.png</Source>
+      <Name>Resources\Images\mainSpriteUp</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
       <Options>None</Options>
-      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteUpStill.xnb</Output>
-      <Time>2014-10-09T13:24:43.2694316-06:00</Time>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\mainSpriteUp.xnb</Output>
+      <Time>2014-10-09T13:24:43.2664306-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\floorbg.png</Source>
+      <Name>Resources\Images\floorbg</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\floorbg.xnb</Output>
+      <Time>2014-10-28T15:34:04.0220335-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\gamebar.png</Source>
+      <Name>Resources\Images\gamebar</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\gamebar.xnb</Output>
+      <Time>2014-10-28T15:43:09.3453895-06:00</Time>
+    </Item>
+    <Item>
+      <Source>SpriteFont1.spritefont</Source>
+      <Name>SpriteFont1</Name>
+      <Importer>FontDescriptionImporter</Importer>
+      <Processor>FontDescriptionProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\SpriteFont1.xnb</Output>
+      <Time>2014-10-28T15:52:30.760955-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\cottoncandy.png</Source>
+      <Name>Resources\Images\cottoncandy</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\cottoncandy.xnb</Output>
+      <Time>2014-10-28T15:24:25.0180124-06:00</Time>
+    </Item>
+    <Item>
+      <Source>Resources\Images\kiosk0.png</Source>
+      <Name>Resources\Images\kiosk0</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+      <Options>None</Options>
+      <Output>C:\Users\Amber\Documents\GitHub\CS3350-GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\GrandTheftCandy\bin\x86\Debug\Content\Resources\Images\kiosk0.xnb</Output>
+      <Time>2014-10-28T15:24:52.3299584-06:00</Time>
     </Item>
     <BuildSuccessful>true</BuildSuccessful>
     <Settings>
@@ -264,8 +300,8 @@
         <Value>2010-08-23T12:41:18-06:00</Value>
       </Assembly>
       <Assembly>
-        <Key>C:\Windows\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
-        <Value>2014-09-14T10:43:24.3465741-06:00</Value>
+        <Key>C:\WINDOWS\Microsoft.Net\assembly\GAC_32\Microsoft.Xna.Framework.Content.Pipeline\v4.0_4.0.0.0__842cf8be1de50553\Microsoft.Xna.Framework.Content.Pipeline.dll</Key>
+        <Value>2014-10-16T01:15:14.8479268-06:00</Value>
       </Assembly>
     </Assemblies>
   </Asset>

@@ -1,6 +1,6 @@
 /*
  * Grand Theft Candy
- * Level 1 - Project 1
+ * Level 1 - Prototype 1
  * Simple XNA Game
  * Matthew Rawlins
  * Jeffrey St.Germain  
@@ -20,6 +20,9 @@
  * Note that the starting position for a sprite is the center of the sprite.
  * The top 200 is reserved for the background wall.
  */
+
+// TODO: Download and start using all of the new NPC Class functions.
+// Ensure that all the functionality is the same.
 
 using System;
 using System.Collections.Generic;
@@ -44,21 +47,25 @@ namespace GrandTheftCandy
       GraphicsDeviceManager graphics;
       public SpriteBatch spriteBatch;
       public Matrix cameraPosition;
+      public bool gameNotPaused;
+      private bool ableToPause;
+      private int pauseTimer;
 
-      Player_Controlled_Sprite player;
-      NPC_Base_Class mother1;
-      NPC_Base_Class guard1;
+      public Player_Controlled_Sprite player;
+      NPC_Base_Class[] mothers;
+      NPC_Base_Class[] guards;
+      Sprite_Base_Class[] folliage;
       Sprite_Base_Class candyEntrance;
       Sprite_Base_Class winScreen;
       Sprite_Base_Class gameOver;
       Sprite_Base_Class mallFloor;
       Sprite_Base_Class mallWall;
-      Sprite_Base_Class gameBar;
+      Cotton_Candy_Bomb cottonCandyBomb;
+      public Game_Bar gameBar;
 
       Vector2 screenCenter;
       Vector2 candyStoreEntrance;
 
-      Texture2D lineTexture;
       #endregion
 
       #region Constructors
@@ -71,6 +78,12 @@ namespace GrandTheftCandy
          this.IsMouseVisible = true;
          Content.RootDirectory = "Content";
          cameraPosition = Matrix.CreateTranslation(new Vector3(0, 0, 1));
+         mothers = new NPC_Base_Class[5];
+         guards = new NPC_Base_Class[2];
+         folliage = new Sprite_Base_Class[8];
+         gameNotPaused = true;
+         ableToPause = true;
+         pauseTimer = 0;
       }
 
       #endregion
@@ -85,21 +98,19 @@ namespace GrandTheftCandy
       protected override void Initialize()
       {
          screenCenter = new Vector2 ( ( graphics.GraphicsDevice.Viewport.Width / 2 ), ( graphics.GraphicsDevice.Viewport.Height / 2 ) );
-         candyStoreEntrance = new Vector2 ( 2620, 200);
-         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
-         string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
+         candyStoreEntrance = new Vector2 ( 2640, 200);
 
          #region Sprite Creation
-         player = new Player_Controlled_Sprite (this, @"Resources\Images\mainSpriteLeftStill", screenCenter, Color.White, true, "Player");
-         mother1 = new NPC_Base_Class (this, MotherSprites, new Vector2 (50, 400), Color.White, true, "Mother1", true);
-         guard1 = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard1", false);
 
-         candyEntrance = new Sprite_Base_Class(this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
-         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2(1500, 300), false, 0, "Mall Floor");
-         mallWall = new Sprite_Base_Class ( this, @"Resources\Images\mallbg", new Vector2(1500, 100), true, 1, "Mall Wall");
-         gameBar = new Sprite_Base_Class (this, @"Resources\Images\gamebar", new Vector2 (400, 300), false, 100, "Game bar");
-         gameBar.Visible = false;
+         initializePlayer ();
+         initializeMothers ();
+         initializeGuards ();
+         initializeMall ();
+         initializeFolliage ();
+
+         gameBar = new Game_Bar (this, @"Resources\Images\gamebar", new Vector2 (400, 300), Color.White, "Game bar");
          candyEntrance.Visible = false;
+         gameBar.Visible = false;
 
          Splash_Screen splashScreen = new Splash_Screen(this, @"Resources\Images\SplashScreen", screenCenter, Color.White, "Splash Screen");
 
@@ -108,25 +119,39 @@ namespace GrandTheftCandy
 
          winScreen = new Sprite_Base_Class(this, @"Resources\Images\winner", screenCenter, false, 1000, "Game Over 2");
          winScreen.Visible = false;
+
+         cottonCandyBomb = new Cotton_Candy_Bomb (this, @"Resources\Images\cottoncandy", screenCenter, 250, "Cotton Candy");
+         cottonCandyBomb.Visible = false;
+
          #endregion
 
          #region Set Guard behavior
-         // Create a path of two waypoints for the guard to follow.
-         Vector2[] guard1Path = new Vector2[2];
-         guard1Path[0] = new Vector2 (500, 400);
-         guard1Path[1] = new Vector2 (1500, 400);
 
+         // Create a path of two waypoints for the guard to follow.
+         Vector2[] guard1Path = new Vector2[4];
+         guard1Path[0] = new Vector2 (300, 300);
+         guard1Path[1] = new Vector2 (300, 550);
+         guard1Path[2] = new Vector2 (750, 600);
+         guard1Path[3] = new Vector2 (1500, 400);
+
+         Vector2[] guard2Path = new Vector2[4];
+         guard2Path[0] = new Vector2 (1500, 300);
+         guard2Path[1] = new Vector2 (2500, 300);
+         guard2Path[2] = new Vector2 (2500, 800);
+         guard2Path[3] = new Vector2 (1500, 800);
 
          // Enable the guard to move, set the path, speed, and detection radius.
-         guard1.moveable = true;
-         guard1.patrolPath = guard1Path;
-         guard1.movementSpeed = new Vector2 (2, 2);
-         guard1.detectionRadius = 100;
+         guards[0].moveable = guards[1].moveable = true;
+         guards[0].movementSpeed = guards[1].movementSpeed =new Vector2 (4, 4);
+         guards[0].detectionRadius = guards[1].detectionRadius = 0;
+         guards[0].followPath = guard1Path;
+         guards[1].followPath = guard2Path;
+
          #endregion
 
-         //Song backgroundSound = Content.Load<Song>(@"Resources\Sounds\gameMusic");
-         //MediaPlayer.Play(backgroundSound);
-         //MediaPlayer.Volume = 50;
+         Song backgroundSound = Content.Load<Song> (@"Resources\Sounds\gameMusic");
+         MediaPlayer.Play (backgroundSound);
+         MediaPlayer.Volume = 50;
 
          base.Initialize();
         }
@@ -156,37 +181,125 @@ namespace GrandTheftCandy
       /// <param name="gameTime">Provides a snapshot of timing values.</param>
       protected override void Update(GameTime gameTime)
       {
-         // Allows the game to exit.
          KeyboardState keyboardState = Keyboard.GetState ();
 
-         //Exits the game
+         #region Game Exit
+
          if (keyboardState.IsKeyDown (Keys.Escape) ||
             GamePad.GetState (PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
          {
             this.Exit ();
          }
 
-         // Win condition
-         if (player.isWithinSpriteBoundry(candyEntrance))
+         #endregion
+
+         #region Win Condition
+
+         if (player.isWithinSpriteBoundry(candyEntrance) && player.candyCount>4)
          {
             winScreen.Visible = true;
             player.movementAllowed = false;
             cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
          }
 
-         // Stealing Candy
-         if (player.collidesWithAbove (mother1) || player.collidesWithBelow (mother1))
+         #endregion
+
+         #region Candy Stealing
+
+         for (int i = 0; i < mothers.Length; i++)
          {
-            mother1.hasCandy = false;
+            if ((player.collidesWithAbove (mothers[i]) || player.collidesWithBelow (mothers[i])) && mothers[i].hasCandy)
+            {
+               mothers[i].hasCandy = false;
+               mothers[i].candyRespawnTimer = 150;
+               player.candyCount++;
+               for (int c = 0; c < guards.Length; c++)
+               {
+                  guards[c].detectionRadius = 50 * player.candyCount;
+               }
+            }
          }
 
-         // End condition (Player gets caught)
-         if ((player.collides(guard1) || player.collidesHorizontally (guard1)) && guard1.followingPlayer)
+         #endregion
+
+         #region Getting Caught (Losing)
+
+         for (int i = 0; i < guards.Length; i++)
          {
-            cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
-            player.movementAllowed = false;
-            gameOver.Visible = true;
+            if (((player.collides (guards[i]) || 
+               player.collidesHorizontally (guards[i])) && guards[i].followingPlayer) &&
+               !player.isHidden)
+            {
+               cameraPosition = Matrix.CreateTranslation (Vector3.Zero);
+               player.movementAllowed = false;
+               gameOver.Visible = true;
+            }
          }
+
+         #endregion
+
+         #region Cotton Candy Radius Detection
+         if (cottonCandyBomb.isActive)
+         {
+            for (int i = 0; i < guards.Length; i++)
+            {
+               if (cottonCandyBomb.isWithinDetectionRadius( guards[i]))
+               {
+                  guards[i].detectionRadius = (guards[i].detectionRadius/2);
+               }
+            }
+         }
+
+         #endregion
+
+         #region Hiding
+
+         bool isPlayerHidden = false;
+         for (int i = 0; i < folliage.Length; i++)
+         {
+
+            if (player.collidesWithAbove (folliage[i]) || player.collidesWithBelow (folliage[i]))
+            {
+               isPlayerHidden = true;
+            }
+
+            if (isPlayerHidden)
+            {
+               player.spriteColor = Color.Gray;
+            }
+            else
+            {
+               player.spriteColor = Color.White;
+            }
+
+            player.isHidden = isPlayerHidden;
+         }
+
+         #endregion
+
+         #region Game Pause
+
+         if (keyboardState.IsKeyDown (Keys.P))
+         {
+            if (ableToPause)
+            {
+               gameNotPaused = !(gameNotPaused);
+               ableToPause = false;
+               pauseTimer = 15;
+            }
+         }
+
+      if (!ableToPause && pauseTimer > 0)
+      {
+         pauseTimer--;
+      }
+
+      if (pauseTimer < 1 && !ableToPause)
+      {
+         ableToPause = true;
+      }
+
+      #endregion
 
          base.Update(gameTime);
       }
@@ -206,37 +319,50 @@ namespace GrandTheftCandy
 
       #region Functions
 
-      /// <summary>
-      /// Draws either a vertical line or horizontal line using a starting point and an ending point.
-      /// </summary>
-      /// <param name="a_lineTexture"></param>
-      /// <param name="spriteBatch"></param>
-      /// <param name="a_startingPosition"></param>
-      /// <param name="a_endingPosition"></param>
-      /// <param name="a_drawVertical"></param>
-      public static void DrawLine(Texture2D a_lineTexture, SpriteBatch spriteBatch, 
-         Vector2 a_startingPosition, Vector2 a_endingPosition, bool a_drawVertical)
+      public void initializePlayer ()
       {
-         if ( a_drawVertical )
-         {
-            spriteBatch.Begin();
-            while ( a_startingPosition.Y < a_endingPosition.Y )
-            {
-               spriteBatch.Draw(a_lineTexture, a_startingPosition, Color.Black);
-               a_startingPosition.Y++;
-            }
-            spriteBatch.End();
-         }
-         else
-         {
-            spriteBatch.Begin ();
-            while ( a_startingPosition.X < a_endingPosition.X )
-            {
-               spriteBatch.Draw ( a_lineTexture, a_startingPosition, Color.Black );
-               a_startingPosition.X++;
-            }
-            spriteBatch.End ();
-         }
+         string[] playerSprites = new string[8]{@"Resources\Images\mainSpriteDownStill", @"Resources\Images\mainSpriteDown",
+            @"Resources\Images\mainSpriteLeftStill", @"Resources\Images\mainSpriteLeft",
+            @"Resources\Images\mainSpriteRightStill", @"Resources\Images\mainSpriteRight", 
+            @"Resources\Images\mainSpriteUpStill", @"Resources\Images\mainSpriteUp"};
+         int[] playerSpriteSequences = new int[8] { 1, 7, 1, 7, 1, 7, 1, 7 };
+         player = new Player_Controlled_Sprite (this, playerSprites, playerSpriteSequences, screenCenter, Color.White, true, "Player");
+      }
+
+      public void initializeMothers ()
+      {
+         string[] MotherSprites = new string[2] { @"Resources\Images\stroller1", @"Resources\Images\stroller2" };
+         mothers[0] = new NPC_Base_Class (this, MotherSprites, new Vector2 (250, 600), Color.White, true, "Mother0", true);
+         mothers[1] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1500, 800), Color.White, true, "Mother1", true);
+         mothers[2] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2250, 400), Color.White, true, "Mother2", true);
+         mothers[3] = new NPC_Base_Class (this, MotherSprites, new Vector2 (2500, 750), Color.White, true, "Mother3", true);
+         mothers[4] = new NPC_Base_Class (this, MotherSprites, new Vector2 (1000, 300), Color.White, true, "Mother4", true);
+      }
+
+      public void initializeGuards ()
+      {
+         string[] GuardSprite = new string[2] { @"Resources\Images\guardsprite", null };
+         guards[0] = new NPC_Base_Class (this, GuardSprite, new Vector2 (1000, 400), Color.White, true, "Guard0", false);
+         guards[1] = new NPC_Base_Class (this, GuardSprite, new Vector2 (2000, 500), Color.White, true, "Guard1", false);
+      }
+
+      public void initializeMall ()
+      {
+         candyEntrance = new Sprite_Base_Class (this, @"Resources\Images\redsquare", candyStoreEntrance, Color.White, true, "Candy Entrance");
+         mallFloor = new Sprite_Base_Class (this, @"Resources\Images\floorbg", new Vector2 (1500, 400), false, 0, "Mall Floor");
+         mallWall = new Sprite_Base_Class (this, @"Resources\Images\mallbg", new Vector2 (1500, 100), true, 1, "Mall Wall");
+      }
+
+      public void initializeFolliage ()
+      {
+         folliage[0] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (500, 450), Color.White, true, "Bush1");
+         folliage[1] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (2600, 500), Color.White, true, "Bush2");
+         folliage[2] = new Sprite_Base_Class (this, @"Resources\Images\hidingTrash", new Vector2 (750, 200), Color.White, true, "Trash Can1");
+         folliage[3] = new Sprite_Base_Class (this, @"Resources\Images\hidingtrash", new Vector2 (1800, 200), Color.White, true, "Trash Can2");
+         folliage[4] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1600, 400), Color.White, true, "Tree1");
+         folliage[5] = new Sprite_Base_Class (this, @"Resources\Images\hidingBush", new Vector2 (1500, 650), Color.White, true, "Bush3");
+         folliage[6] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (1000, 800), Color.White, true, "Tree2");
+         folliage[7] = new Sprite_Base_Class (this, @"Resources\Images\hidingTree", new Vector2 (2250, 700), Color.White, true, "Tree3");
       }
 
       #endregion
