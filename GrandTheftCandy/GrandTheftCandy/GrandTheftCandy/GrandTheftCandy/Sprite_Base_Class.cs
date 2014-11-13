@@ -777,7 +777,10 @@ namespace GrandTheftCandy
    } // End Player_Controlled_Sprite Class.
 
 
-   // TODO:
+   // TODO: 
+   // Inherit from Animated Class and redo constructor.
+   // Add temporaty destination. (Temporary path?)
+   // Add a function to set/remove the temporaty destination.
    // Add the ability to run into objects and detect if continuously running into the and plot a path around.
    /// <summary>
    /// For the mother NPC pass in true for the boolean and give two sprite names for the textures as an array in a_textureFileNames.
@@ -792,31 +795,82 @@ namespace GrandTheftCandy
    {
       #region Member Variables
 
+      private String[] m_SpriteVersionTextureNames; // Move to NPC_MOTHER for candy/non-candy switching
+      private Texture2D[] m_SpriteVersions; // Move to NPC_MOTHER for candy/non-candy switching
+      private bool m_IsMother; // Remove
+      private bool m_HasCandy; // Move to NPC_MOTHER
+      private bool m_FollowingPlayer; // Move to NPC_GUARD
       private bool m_Moveable; // Keep
+      private int m_DetectionRadius; // Move to NPC_GUARD
       private int m_PathIndex; // Keep
+      private int m_RespawnCandyTimer; // Move to NPC_MOTHER
       private Vector2 m_CurrentDestination; // Keep
-      private Vector2 m_TemporaryDestination; // Keep
-      protected Vector2 m_CurrentMovementSpeed; //Keep
-      private Vector2[] m_FollowPath; // Keep
+      private Vector2 m_PreviousMovementSpeed; // Remove
+      private Vector2[] m_PatrolPath; // Keep but rename
 
 
       #endregion
 
       #region Constructors
 
-      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence,
-         Vector2 a_startingPosition, Vector2 a_MovementSpeed, Color a_renderColor, bool a_collidable, String a_SpriteName)
+      public NPC_Base_Class (Game a_game, String[] a_textureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition, 
+         Color a_renderColor, bool a_collidable, String a_SpriteName)
          : base (a_game, a_textureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
-         // New Constructor Code
-         m_CurrentMovementSpeed = a_MovementSpeed;
+         if(m_IsMother)
+         {
+            m_HasCandy = true;
+            m_RespawnCandyTimer = 0;
+         }
+         m_SpriteVersionTextureNames = a_textureFileNames;
+         m_SpriteVersions = new Texture2D[2];
+         m_PatrolPath = new Vector2[2];
+         m_FollowingPlayer = false;
+         m_Moveable = false;
+         m_PreviousMovementSpeed = new Vector2 (5, 5);
+         m_DetectionRadius = 200;
          m_PathIndex = 0;
-         m_FollowPath = new Vector2[2];
       }
 
       #endregion
 
       #region Getters and Setters
+
+      public bool hasCandy
+      {
+         get
+         {
+            return m_HasCandy;
+         }
+         set
+         {
+            m_HasCandy = value;
+         }
+      }
+
+      public bool isMother
+      {
+         get
+         {
+            return m_IsMother;
+         }
+         set
+         {
+            m_IsMother = value;
+         }
+      }
+
+      public bool followingPlayer
+      {
+         get
+         {
+            return m_FollowingPlayer;
+         }
+         set
+         {
+            m_FollowingPlayer = value;
+         }
+      }
 
       public bool moveable
       {
@@ -827,6 +881,26 @@ namespace GrandTheftCandy
          set
          {
             m_Moveable = value;
+         }
+      }
+
+      public int detectionRadius
+      {
+         get
+         {
+            return m_DetectionRadius;
+         }
+         set
+         {
+            m_DetectionRadius = value;
+         }
+      }
+
+      public int candyRespawnTimer
+      {
+         set
+         {
+            m_RespawnCandyTimer = value;
          }
       }
 
@@ -844,23 +918,20 @@ namespace GrandTheftCandy
 
       public Vector2 movementSpeed
       {
-         get
-         {
-            return m_CurrentMovementSpeed;
-         }
          set
          {
-            m_CurrentMovementSpeed = value;
+            m_PreviousMovementSpeed = value;
          }
       }
 
-      public Vector2[] followPath
+      public Vector2[] patrolPath
       {
          set
          {
-            m_FollowPath = value;
+            m_PatrolPath = value;
          }
       }
+
 
       #endregion
 
@@ -868,6 +939,22 @@ namespace GrandTheftCandy
 
       protected override void LoadContent ()
       {
+         if(m_IsMother)
+         {
+            for(int i = 0; i < m_SpriteVersionTextureNames.Length; i++)
+            {
+               m_SpriteVersions[i] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[i]);
+            }
+         }
+         else
+         {
+            m_SpriteVersions[0] = Game.Content.Load<Texture2D> (m_SpriteVersionTextureNames[0]);
+         }
+
+         m_spriteCenter = new Vector2 (m_SpriteVersions[0].Height * .5f, m_SpriteVersions[0].Width * .5f);
+         m_SpriteHeight = m_SpriteVersions[0].Height;
+         m_SpriteWidth = m_SpriteVersions[0].Width;
+
          base.LoadContent ();
       }
 
@@ -880,46 +967,72 @@ namespace GrandTheftCandy
       {
          if (((GTC_Level1)this.Game).gameNotPaused)
          {
-            if (m_Moveable)
+            #region Guard Follow Behavior
+            if (!isMother && m_Moveable)
             {
-               // If there is a temporary destination.
-               if ((m_TemporaryDestination != Vector2.Zero) && (m_CurrentDestination != m_TemporaryDestination))
+               // If the player is within the detection radius of the guard
+
+               bool withinDetectionRadius = (((GTC_Level1)this.Game).player.playerPosition - this.m_spritePosition).Length () < m_DetectionRadius;
+
+               if (withinDetectionRadius && !m_FollowingPlayer && !((GTC_Level1)this.Game).player.isHidden)
                {
-                  // Is within the acceptable distance of the destination.
-                  if (isWithinDistanceOfDestination (3))
-                  {
-                     m_TemporaryDestination = Vector2.Zero;
-                     m_CurrentDestination = m_FollowPath[m_PathIndex];
-                  }
-                  else
-                  {
-                     m_CurrentDestination = m_TemporaryDestination;
-                  }
+                  m_FollowingPlayer = true;
+               }
+               else if (!withinDetectionRadius && m_FollowingPlayer)
+               {
+                  m_FollowingPlayer = false;
+               }
+
+               if (((GTC_Level1)this.Game).player.isHidden)
+               {
+                  m_FollowingPlayer = false;
+               }
+
+               // If the guard is currently following the player, set the current destination to the players position.
+               if (m_FollowingPlayer)
+               {
+                  m_CurrentDestination = ((Player_Controlled_Sprite)((GTC_Level1)this.Game).Components[0]).playerPosition;
                }
                else
                {
-                  if (m_CurrentDestination != m_FollowPath[m_PathIndex])
+                  // Otherwise, test if the guard has reached its current destination.
+                  if (m_spritePosition == m_PatrolPath[m_PathIndex] || isWithinDistanceOfDestination (3))
                   {
-                     m_CurrentDestination = m_FollowPath[m_PathIndex];
+                     if ((m_PathIndex + 1) >= m_PatrolPath.Length)
+                     {
+                        m_PathIndex = 0;
+                     }
+                     else
+                     {
+                        m_PathIndex++;
+                     }
                   }
-                  else if (isWithinDistanceOfDestination (3))
-                  {
-                     m_PathIndex++;
-                     m_CurrentDestination = m_FollowPath[m_PathIndex];
-                  }
+                  // Set the new destination.
+                  m_CurrentDestination = m_PatrolPath[m_PathIndex];
                }
 
                // Calculate the new movement vector based on the current destination.
-               m_CurrentMovement = m_CurrentDestination - this.spritePosition;
-               m_CurrentMovement.Normalize ();
+               Vector2 movementDestination = m_CurrentDestination - this.spritePosition;
+               movementDestination.Normalize ();
 
-               this.m_spritePosition += (m_CurrentMovementSpeed * m_CurrentMovement);
+               this.m_spritePosition += (movementDestination * m_PreviousMovementSpeed);
                calculateDrawOrder ();
             }
-            else
+            #endregion
+
+            #region Mother Candy Respawn
+            if (m_IsMother)
             {
-               m_CurrentMovement = Vector2.Zero;
+               if (!m_HasCandy && m_RespawnCandyTimer > 0)
+               {
+                  m_RespawnCandyTimer--;
+               }
+               else if (!m_HasCandy && m_RespawnCandyTimer < 1)
+               {
+                  m_HasCandy = true;
+               }
             }
+            #endregion
 
             base.Update (gameTime);
          }
@@ -927,6 +1040,30 @@ namespace GrandTheftCandy
 
       public override void Draw (GameTime gameTime)
       {
+         SpriteBatch sb = ((GTC_Level1) this.Game).spriteBatch;
+
+         sb.Begin (SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, ((GTC_Level1)this.Game).cameraPosition);
+         // If the mother has candy use the sprite that has the baby holding candy.
+         if (m_IsMother)
+         {
+            if (m_HasCandy)
+            {
+               sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+               sb.Draw (m_SpriteVersions[1], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+            }
+         }
+         else
+         {
+            sb.Draw (m_SpriteVersions[0], m_spritePosition, null, m_spriteRenderColor, 0f, m_spriteCenter,
+                  1.0f, SpriteEffects.None, 0f);
+         }
+         sb.End ();
+
          base.Draw (gameTime);
       }
 
@@ -943,15 +1080,10 @@ namespace GrandTheftCandy
          return isWithinDistance;
       }
 
-      public void setTempDestination (Vector2 a_Destination)
-      {
-         m_TemporaryDestination = a_Destination;
-      }
-
       #endregion
    } // End NPC_Base_Class
 
-   // TODO: Check that ALL Functionality is the same.
+   // TODO: Finish all mother functions.
    public class NPC_Mother_Class : NPC_Base_Class
    {
       #region Member Variables
@@ -969,9 +1101,8 @@ namespace GrandTheftCandy
 
       public NPC_Mother_Class (Game a_game, String[] a_TextureFileNames, String[] a_AlternateTextureFileNames,
          int[] a_SpriteAnimationSequence, int[] a_AlternateSpriteAnimationSequence, Vector2 a_startingPosition,
-         Vector2 a_MovementSpeed, Color a_renderColor, bool a_collidable, String a_SpriteName, int a_CandyRespawnTimer)
-         : base (a_game, a_TextureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_MovementSpeed,
-         a_renderColor, a_collidable, a_SpriteName)
+         Color a_renderColor, bool a_collidable, String a_SpriteName, int a_CandyRespawnTimer)
+         : base (a_game, a_TextureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_renderColor, a_collidable, a_SpriteName)
       {
          m_HasCandy = true;
          m_PreviousCandyState = true;
@@ -1024,7 +1155,6 @@ namespace GrandTheftCandy
       {
          if (((GTC_Level1)this.Game).gameNotPaused)
          {
-            #region Sprite Switching
             // If the drawn sprites need to switch (there was a recent change)
             if (m_HasCandy != m_PreviousCandyState)
             {
@@ -1040,19 +1170,6 @@ namespace GrandTheftCandy
                m_SpriteAnimationSequences = m_AlternateSpriteAnimationSequence;
                m_AlternateSpriteAnimationSequence = tempAnimations;
             }
-
-            #endregion
-
-            #region Mother Candy Respawn
-            if (!m_HasCandy && m_CandyRespawnTimer > 0)
-            {
-               m_CandyRespawnTimer--;
-            }
-            else if (!m_HasCandy && m_CandyRespawnTimer < 1)
-            {
-               m_HasCandy = true;
-            }
-            #endregion
          }
       }
 
@@ -1065,95 +1182,30 @@ namespace GrandTheftCandy
       #endregion
    } // End NPC_Mother_Class
 
-   // TODO: Check ALL Functionality is the same.
+   // TODO: Start NPC_Guard_Class
    public class NPC_Guard_Class : NPC_Base_Class
    {
       #region Member Variables
 
-      private bool m_FollowingPlayer;
-      private int m_DetectionRadius;
+
 
       #endregion
 
       #region Constructors
 
-      public NPC_Guard_Class (Game a_game, String[] a_TextureFileNames, int[] a_SpriteAnimationSequence, Vector2 a_startingPosition,
-         Vector2 a_MovementSpeed, Color a_renderColor, bool a_collidable, String a_SpriteName, int a_DetectionRadius)
-         : base (a_game, a_TextureFileNames, a_SpriteAnimationSequence, a_startingPosition, a_MovementSpeed,
-         a_renderColor, a_collidable, a_SpriteName)
-      {
-         m_FollowingPlayer = false;
-         m_DetectionRadius = a_DetectionRadius;
-      }
+
 
       #endregion
 
       #region Getters and Setters
 
-      public bool followingPlayer
-      {
-         get
-         {
-            return m_FollowingPlayer;
-         }
-         set
-         {
-            m_FollowingPlayer = value;
-         }
-      }
 
-      public int detectionRadius
-      {
-         get
-         {
-            return m_DetectionRadius;
-         }
-         set
-         {
-            m_DetectionRadius = value;
-         }
-      }
 
       #endregion
 
       #region Overridden Functions
 
-      protected override void LoadContent ()
-      {
-         base.LoadContent ();
-      }
 
-      public override void Initialize ()
-      {
-         base.Initialize ();
-      }
-
-      public override void Update (GameTime gameTime)
-      {
-         if (((GTC_Level1)this.Game).gameNotPaused)
-         {
-            Vector2 distanceToPlayer = ((GTC_Level1)this.Game).player.playerPosition - this.spritePosition;
-            bool isWithinDetectionRadius = distanceToPlayer.Length() < m_DetectionRadius;
-
-            if (isWithinDetectionRadius)
-            {
-               m_FollowingPlayer = true;
-               setTempDestination (((GTC_Level1)this.Game).player.playerPosition);
-            }
-            else
-            {
-               m_FollowingPlayer = false;
-               setTempDestination (Vector2.Zero);
-            }
-
-            base.Update (gameTime);
-         }
-      }
-
-      public override void Draw (GameTime gameTime)
-      {
-         base.Draw (gameTime);
-      }
 
       #endregion
 

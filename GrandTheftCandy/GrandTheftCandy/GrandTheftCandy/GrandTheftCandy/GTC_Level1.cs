@@ -21,9 +21,6 @@
  * The top 200 is reserved for the background wall.
  */
 
-// TODO: Download and start using all of the new NPC Class functions.
-// Ensure that all the functionality is the same.
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -144,8 +141,8 @@ namespace GrandTheftCandy
          guards[0].moveable = guards[1].moveable = true;
          guards[0].movementSpeed = guards[1].movementSpeed =new Vector2 (4, 4);
          guards[0].detectionRadius = guards[1].detectionRadius = 0;
-         guards[0].followPath = guard1Path;
-         guards[1].followPath = guard2Path;
+         guards[0].patrolPath = guard1Path;
+         guards[1].patrolPath = guard2Path;
 
          #endregion
 
